@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>DNA sequencing calculator</title>
     <!-- Vue.js CDN -->
     <link href="https://cdn.jsdelivr.net/npm/vuetify@2.6.14/dist/vuetify.min.css" rel="stylesheet">
     <!-- Material Design Icons (required by Vuetify) -->
@@ -33,19 +33,11 @@
                     <v-row>
                         <v-col cols="12" class="px-0">
                             <v-card>
-                                <v-card-title>Sampling Design</v-card-title>
+                                <v-card-title>Experimental design</v-card-title>
                                 <v-card-text>
                                     <v-form>
                                         <v-row>
-                                            <!-- Sampling Design -->
-                                            <v-col cols="12" md="12">
-                                                <v-select
-                                                    v-model="selectedStrategy"
-                                                    :items="poolingMethod"
-                                                    label="Select strategy"
-                                                    outlined
-                                                ></v-select>
-                                            </v-col>
+                                            <!-- Experimental design -->
                                             <v-col cols="12" md="4">
                                                 <v-text-field
                                                     v-model.number="numSites"
@@ -68,7 +60,7 @@
                                             </v-col>
                                             <v-col cols="12" md="4">
                                                 <v-text-field
-                                                    v-model.number="poolingNumber"
+                                                    v-model.number="numSemipools"
                                                     label="Pooling number"
                                                     type="number"
                                                     outlined
@@ -76,105 +68,39 @@
                                                 ></v-text-field>
                                             </v-col>
 
-                                            <!-- Consumables -->
-                                            <v-col cols="12">
-                                                <v-card flat>
-                                                    <v-card-title style="padding-left: 0px;" class="d-flex align-left">
-                                                        Consumables
-                                                    </v-card-title>
-                                                    <v-card-text class="pa-0">
-                                                        <v-btn
-                                                            outlined
-                                                            color="gray"
-                                                            class="mb-4"
-                                                            @click="addConsumable"
-                                                            style="background-color: white; width: 150px; border: 1px solid gray;"
-                                                        >
-                                                            Add Item
-                                                        </v-btn>
-                                                        <v-data-table
-                                                            :headers="consumableHeaders"
-                                                            :items="consumables"
-                                                            hide-default-footer
-                                                            style="border: 1px solid gray;"
-                                                        >
-                                                            <template v-slot:item.actions="{ item }">
-                                                                <v-btn
-                                                                    outlined
-                                                                    color="black"
-                                                                    class="mr-2"
-                                                                    x-small
-                                                                    @click="editConsumable(item)"
-                                                                    style="background-color: white; min-width: 32px; padding: 0 4px;"
-                                                                >
-                                                                    <v-icon color="black" small>mdi-pencil</v-icon>
-                                                                </v-btn>
-                                                                <v-btn
-                                                                    outlined
-                                                                    color="black"
-                                                                    x-small
-                                                                    @click="deleteConsumable(item)"
-                                                                    style="background-color: white; min-width: 32px; padding: 0 4px;"
-                                                                >
-                                                                    <v-icon color="black" small>mdi-delete</v-icon>
-                                                                </v-btn>
-                                                            </template>
-                                                        </v-data-table>
-                                                    </v-card-text>
-                                                </v-card>
-                                            </v-col>
-
-                                            <!-- Labor -->
+                                            <!-- Costs Section -->
                                             <v-col cols="12">
                                                 <v-card-title style="padding-left: 0px; color: black;" class="d-flex align-left pt-10">
-                                                    Labor Costs
+                                                    Costs
                                                 </v-card-title>
                                                 <v-card-text class="pa-0">
                                                     <v-row>
                                                         <v-col cols="12" md="4">
                                                             <v-text-field
-                                                                v-model.number="pcrTime"
-                                                                label="Time per PCR run (hours)"
+                                                                v-model.number="dnaExtractionCost"
+                                                                label="DNA extraction (per sample)"
                                                                 type="number"
                                                                 outlined
+                                                                prefix="$"
                                                                 min="0"
                                                                 :rules="[v => v >= 0 || 'Value must be greater than or equal to 0']"
                                                             ></v-text-field>
                                                         </v-col>
                                                         <v-col cols="12" md="4">
                                                             <v-text-field
-                                                                v-model.number="samplesPerPCRrun"
-                                                                label="Number of samples per run"
+                                                                v-model.number="pcrCost"
+                                                                label="PCR (per sample)"
                                                                 type="number"
                                                                 outlined
-                                                                min="0"
-                                                                :rules="[v => v >= 1 || 'Value must be greater than or equal to 1']"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <v-col cols="12" md="4">
-                                                            <v-text-field
-                                                                v-model.number="dnaExtractionTime"
-                                                                label="Time for DNA extraction (hours)"
-                                                                type="number"
-                                                                outlined
+                                                                prefix="$"
                                                                 min="0"
                                                                 :rules="[v => v >= 0 || 'Value must be greater than or equal to 0']"
                                                             ></v-text-field>
                                                         </v-col>
                                                         <v-col cols="12" md="4">
                                                             <v-text-field
-                                                                v-model.number="samplesPerDNAextraction"
-                                                                label="Number of samples per DNA extraction"
-                                                                type="number"
-                                                                outlined
-                                                                min="0"
-                                                                :rules="[v => v >= 1 || 'Value must be greater than or equal to 1']"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <v-col cols="12" md="4">
-                                                            <v-text-field
-                                                                v-model.number="personalHourRate"
-                                                                label="Hourly rate"
+                                                                v-model.number="librarySequencingCost"
+                                                                label="Library preparation and sequencing (per run)"
                                                                 type="number"
                                                                 outlined
                                                                 prefix="$"
@@ -185,90 +111,70 @@
                                                     </v-row>
                                                 </v-card-text>
                                             </v-col>
-                                            <!-- Labor -->
+
+                                            <!-- Sequencing Section -->
                                             <v-col cols="12">
                                                 <v-card-title style="padding-left: 0px; color: black;" class="d-flex align-left pt-10">
-                                                    Sequencing Costs
+                                                    Sequencing
                                                 </v-card-title>
                                                 <v-card-text class="pa-0">
                                                     <v-row>
-                                                        <v-col cols="12" md="4">
-                                                            <v-select
-                                                                v-model="organism"
-                                                                :items="organisms"
-                                                                label="Organism"
-                                                                outlined
-                                                            ></v-select>
-                                                        </v-col>
-                                                        <v-col cols="12" md="4">
-                                                            <v-text-field
-                                                                v-model.number="samplesPerLibrary"
-                                                                label="Number of samples in one library"
-                                                                type="number"
-                                                                outlined
-                                                                min="0"
-                                                                :rules="[v => v >= 1 || 'Value must be greater than or equal to 1']"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <v-col cols="12" md="4">
-                                                            <v-text-field
-                                                                v-model.number="costOfLibrary"
-                                                                label="Cost of library preparation"
-                                                                type="number"
-                                                                outlined
-                                                                prefix="$"
-                                                                min="0"
-                                                                :rules="[v => v >= 0 || 'Value must be greater than or equal to 0']"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <v-col cols="12" md="4">
-                                                            <v-text-field
-                                                                v-model.number="pricePerSample"
-                                                                label="Price of each sample"
-                                                                prefix="$"
-                                                                type="number"
-                                                                outlined
-                                                                min="0"
-                                                                :rules="[v => v >= 1 || 'Value must be greater than or equal to 1']"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <v-col cols="12" md="4">
-                                                            <v-text-field
-                                                                v-model.number="sampleSequencingDepth"
-                                                                label="sequencing depth"
-                                                                type="number"
-                                                                outlined
-                                                                suffix="M"
-                                                                min="0"
-                                                                :rules="[v => v >= 0 || 'Value must be greater than or equal to 0']"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <v-col cols="12" md="4">
+                                                        <v-col cols="12" md="6">
                                                             <v-slider
-                                                                v-model="sequencingDepth"
-                                                                :min="sequencingDepthConfig.min"
-                                                                :max="sequencingDepthConfig.max"
-                                                                :step="sequencingDepthConfig.range ? 0.1 : 1"
+                                                                v-model="requiredReads"
+                                                                min="50"
+                                                                max="100000"
+                                                                label="Required number of reads (per sample)"
+                                                                thumb-label="always"
+                                                                :thumb-size="24"
+                                                                :track-color="'grey'"
+                                                                :color="'grey'"
+                                                            ></v-slider>
+                                                        </v-col>
+                                                        <v-col cols="12" md="6">
+                                                            <v-slider
+                                                                v-model="poolingEffect"
+                                                                min="50"
+                                                                max="100000"
                                                                 label="Pooling effect"
                                                                 thumb-label="always"
                                                                 :thumb-size="24"
                                                                 :track-color="'grey'"
                                                                 :color="'grey'"
-                                                                :disabled="sequencingDepthConfig.disabled"
                                                             ></v-slider>
-                                                            <div class="mb-2" v-if="!sequencingDepthConfig.disabled">
-                                                                <span class="text-subtitle-2">Recommended {{ sequencingDepthConfig.range ? 'range' : 'value' }}: 
-                                                                    <span style="color: #2196f3;" class="font-weight-bold">
-                                                                        {{ sequencingDepthConfig.range ? 
-                                                                            sequencingDepthConfig.recommendedMin + '-' + sequencingDepthConfig.recommendedMax + '%' : 
-                                                                            sequencingDepthConfig.recommendedMax + '%' }}
-                                                                    </span>
-                                                                </span>
+                                                        </v-col>
+                                                        <v-col cols="12" md="6">
+                                                            <v-select
+                                                                v-model="sequencingPlatform"
+                                                                :items="platforms"
+                                                                label="Sequencing platform"
+                                                                outlined
+                                                            ></v-select>
+                                                        </v-col>
+                                                        <v-col cols="12" md="6">
+                                                            <div class="d-flex">
+                                                                <v-text-field
+                                                                    v-model.number="sequencingThroughput"
+                                                                    label="Sequencing throughput (reads per run)"
+                                                                    type="number"
+                                                                    outlined
+                                                                    min="0"
+                                                                    :rules="[v => v >= 0 || 'Value must be greater than or equal to 0']"
+                                                                    @input="onThroughputInput"
+                                                                    class="flex-grow-1"
+                                                                ></v-text-field>
+                                                                <v-btn
+                                                                    icon
+                                                                    class="mt-3 ml-2"
+                                                                    title="Reset to platform default"
+                                                                    @click="resetThroughputOverride"
+                                                                    :disabled="!sequencingPlatform"
+                                                                >
+                                                                    <v-icon>mdi-refresh</v-icon>
+                                                                </v-btn>
                                                             </div>
-                                                            <div>
-                                                                <span class="text-subtitle-2">Recommended sequencing depth <span style="color: #2196f3;" class="font-weight-bold">{{ (sampleSequencingDepth * (sequencingDepth / 100)).toFixed(1) + ' M' }}</span>: 
-                                                                   
-                                                                </span>
+                                                            <div class="caption grey--text" v-if="sequencingPlatform">
+                                                                Default for {{ sequencingPlatform }}: {{ platformThroughputs[sequencingPlatform].toLocaleString() }} reads
                                                             </div>
                                                         </v-col>
                                                     </v-row>
@@ -285,6 +191,17 @@
                                         >
                                             Calculate
                                         </v-btn>
+                                        
+                                        <!-- Results Table -->
+                                        <v-card class="mt-4" v-if="showResults">
+                                            <v-data-table
+                                                :headers="resultHeaders"
+                                                :items="resultItems"
+                                                hide-default-footer
+                                                disable-sort
+                                                class="results-table"
+                                            ></v-data-table>
+                                        </v-card>
                                     </v-form>
                                     
                                     <p :class="{ 'blue--text': isBlue, 'red--text': !isBlue, 'message-text': true }" class="mt-4">
@@ -298,100 +215,8 @@
             </v-main>
 
             <v-footer app>
-                <span>&copy; {{ new Date().getFullYear() }} My Project</span>
+                <span>&copy; {{ new Date().getFullYear() }} DNA Sequencing Cost Calculator</span>
             </v-footer>
-
-            <!-- Add/Edit Consumable Dialog -->
-            <v-dialog v-model="consumableDialog" max-width="500px">
-                <v-card>
-                    <v-card-title>
-                        <span class="text-h5">{{ formTitle }}</span>
-                    </v-card-title>
-
-                    <v-card-text>
-                        <v-container>
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-text-field
-                                        v-model="editedItem.name"
-                                        label="Item Name"
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6">
-                                    <v-text-field
-                                        v-model.number="editedItem.price"
-                                        label="Price"
-                                        prefix="$"
-                                        type="number"
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6">
-                                    <v-text-field
-                                        v-model.number="editedItem.totalVolume"
-                                        label="Total Volume"
-                                        type="number"
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6">
-                                    <v-text-field
-                                        v-model.number="editedItem.volumePerSample"
-                                        label="Volume per Sample"
-                                        type="number"
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6">
-                                    <v-select
-                                        v-model="editedItem.category"
-                                        :items="['DNA extraction', 'PCR']"
-                                        label="Category"
-                                        required
-                                    ></v-select>
-                                </v-col>
-                                <v-col cols="12">
-                                    <small class="red--text">Note: 'Total Volume' and 'Volume per Sample' must be in the same units (e.g., both in µl or both in ml).</small>
-                                </v-col>
-                            </v-row>
-                        </v-container>
-                    </v-card-text>
-
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn 
-                            outlined
-                            color="gray"
-                            class="mr-2"
-                            @click="closeConsumableDialog"
-                            style="background-color: white"
-                        >
-                            Cancel
-                        </v-btn>
-                        <v-btn 
-                            outlined
-                            color="gray"
-                            @click="saveConsumable"
-                            style="background-color: white"
-                        >
-                            Save
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
-
-            <!-- Consumable Warning Dialog -->
-            <v-dialog v-model="showConsumableWarningDialog" max-width="500px">
-                <v-card>
-                    <v-card-title class="headline red--text">Consumable Warning</v-card-title>
-                    <v-card-text>
-                        <div v-for="warning in consumableWarnings" :key="warning" class="mb-2">
-                            {{ warning }}
-                        </div>
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="black" outlined style="background-color: white;" @click="showConsumableWarningDialog = false">Close</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
         </v-app>
     </div>
 

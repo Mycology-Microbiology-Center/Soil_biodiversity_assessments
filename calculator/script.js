@@ -7,260 +7,175 @@ new Vue({
         message: 'Configure your parameters and click Calculate',
         isBlue: true,
         
-        // Form data
-        selectedStrategy: null,
-        poolingMethod: ['Soil pooling', 'Unpooled', 'DNA Pooling'],
-        organism: null,
-        organisms: ['Bacteria', 'Fungi', 'Animal'],
+        // Experimental design data
+        poolingMethod: ['Unpooled', 'DNA Pooling', 'Soil pooling', 'Semi-pooled'],
         numSites: 1,
         numSamples: 10,
-        pcrTime: 1,
-        samplesPerPCRrun: 96,
-        dnaExtractionTime: 2,
-        samplesPerDNAextraction: 24,
-        personalHourRate: 0,
-        poolingNumber: 9,
-        samplesPerLibrary: 1,
-        costOfLibrary: null,
-        pricePerSample: null,
-        sequencingDepth: 100,
-        sampleSequencingDepth: 10,
-        x: 10,
-        // Consumables table
-        consumableHeaders: [
-            { text: 'Item', value: 'name', sortable: true },
-            { text: 'Category', value: 'category', sortable: true },
-            { text: 'Price ($)', value: 'price', sortable: true },
-            { text: 'Total Volume', value: 'totalVolume', sortable: true },
-            { text: 'Volume per Sample', value: 'volumePerSample', sortable: true },
-            { text: '', value: 'actions', sortable: false }
+        numSemipools: 9,
+        
+        // Cost inputs
+        dnaExtractionCost: 5,
+        pcrCost: 3,
+        librarySequencingCost: 2000,
+        
+        // Sequencing parameters
+        requiredReads: 10000,
+        poolingEffect: 5000,
+        sequencingPlatform: null,
+        platforms: ['Illumina MiSeq', 'Illumina NextSeq', 'Illumina NovaSeq', 'PacBio', 'Oxford Nanopore', 'Other'],
+        sequencingThroughput: 15000000,
+        platformThroughputs: {
+            'Illumina MiSeq': 25000000,     // ~25M reads per run
+            'Illumina NextSeq': 400000000,  // ~400M reads per run
+            'Illumina NovaSeq': 6000000000, // ~6B reads per run (high-output)
+            'PacBio': 4000000,              // ~4M reads per SMRT cell
+            'Oxford Nanopore': 20000000,    // ~20M reads for PromethION flow cell
+            'Other': 15000000               // Default value for Other
+        },
+        userOverrideThroughput: false,      // Track if user manually changed the throughput value
+        
+        // Results data
+        showResults: false,
+        resultHeaders: [
+            { text: 'Metric', value: 'metric', align: 'start', sortable: false },
+            { text: 'Unpooled', value: 'unpooled', align: 'center', sortable: false },
+            { text: 'DNA Pooling', value: 'dnaPooling', align: 'center', sortable: false },
+            { text: 'Soil pooling', value: 'soilPooling', align: 'center', sortable: false },
+            { text: 'Semi-pooled', value: 'semiPooled', align: 'center', sortable: false }
         ],
-        consumables: [],
-        consumableDialog: false,
-        editedIndex: -1,
-        editedItem: {
-            name: '',
-            category: '',
-            price: 0,
-            totalVolume: 0,
-            volumePerSample: 0
-        },
-        defaultItem: {
-            name: '',
-            category: '',
-            price: 0,
-            totalVolume: 0,
-            volumePerSample: 0
-        },
-        consumableWarnings: [],
-        showConsumableWarningDialog: false
-    },
-    computed: {
-        formTitle() {
-            return this.editedIndex === -1 ? 'New Consumable' : 'Edit Consumable'
-        },
-        sequencingDepthConfig() {
-            if (!this.selectedStrategy || !this.organism) return { value: 100, range: false, min: 25, max: 100, recommendedMax: 100, disabled: true };
-            
-            if (this.selectedStrategy === 'Unpooled') {
-                return { value: 100, range: false, min: 25, max: 100, recommendedMax: 100, disabled: true };
-            }
-            
-            switch(this.organism) {
-                case 'Animal':
-                    return { value: 100, range: false, min: 25, max: 100, recommendedMax: 100 };
-                case 'Bacteria':
-                    return { value: 25, range: true, min: 25, max: 100, recommendedMax: 75, recommendedMin: 25 };
-                case 'Fungi':
-                    if (this.selectedStrategy === 'Soil pooling') {
-                        return { value: 100, range: false, min: 25, max: 100, recommendedMax: 100 };
-                    } else if (this.selectedStrategy === 'DNA Pooling') {
-                        return { value: 50, range: true, min: 25, max: 100, recommendedMax: 100, recommendedMin: 50 };
-                    }
-                    return { value: 100, range: false, min: 25, max: 100, recommendedMax: 100 };
-                default:
-                    return { value: 100, range: false, min: 25, max: 100, recommendedMax: 100 };
-            }
-        }
+        resultItems: []
     },
     methods: {
         buttonClicked() {
             // Validate form
-            if (!this.selectedStrategy) {
-                this.message = 'Please select a strategy';
+            if (!this.sequencingPlatform) {
+                this.message = 'Please select a sequencing platform';
                 this.isBlue = false;
                 return;
             }
             
-           let nrOfSamplesForExtraction
-           let nrOfSamplesForPCR
-
-           if (this.selectedStrategy === 'Soil pooling') {
-            nrOfSamplesForExtraction = this.numSites * this.numSamples / this.poolingNumber;
-           } else {
-            nrOfSamplesForExtraction = this.numSites * this.numSamples;
-           }
-
-           if (this.selectedStrategy === 'Unpooled') {
-            nrOfSamplesForPCR = this.numSites * this.numSamples;
-           } else {
-            nrOfSamplesForPCR = this.numSites * this.numSamples / this.poolingNumber;
-           }    
+            const totalSamples = this.numSites * this.numSamples;
             
-           let dnaExtractionHours = Math.ceil(nrOfSamplesForExtraction / this.samplesPerDNAextraction) * this.dnaExtractionTime;
-           let pcrHours = Math.ceil(nrOfSamplesForPCR / this.samplesPerPCRrun) * this.pcrTime;
-           let laborCost = (pcrHours + dnaExtractionHours) * this.personalHourRate;
-           let consumablesCost = this.calculateConsumablesCost(nrOfSamplesForPCR, nrOfSamplesForExtraction);
-           let libraryCost = this.costOfLibrary * Math.ceil((nrOfSamplesForPCR / this.samplesPerLibrary));
-           let sequencingCost = this.calculateSequencingCost(nrOfSamplesForPCR);    
-           let totalCost = laborCost + consumablesCost + sequencingCost;
+            // Calculate results for each pooling method
+            const results = {
+                totalReads: {
+                    metric: 'Total number of reads required',
+                    unpooled: this.calculateTotalReads('Unpooled', totalSamples),
+                    dnaPooling: this.calculateTotalReads('DNA Pooling', totalSamples),
+                    soilPooling: this.calculateTotalReads('Soil pooling', totalSamples),
+                    semiPooled: this.calculateTotalReads('Semi-pooled', totalSamples)
+                },
+                sequencingRuns: {
+                    metric: 'Number of sequencing runs',
+                    unpooled: this.calculateSequencingRuns('Unpooled', totalSamples),
+                    dnaPooling: this.calculateSequencingRuns('DNA Pooling', totalSamples),
+                    soilPooling: this.calculateSequencingRuns('Soil pooling', totalSamples),
+                    semiPooled: this.calculateSequencingRuns('Semi-pooled', totalSamples)
+                },
+                cost: {
+                    metric: 'Expected cost ($)',
+                    unpooled: this.calculateTotalCost('Unpooled', totalSamples),
+                    dnaPooling: this.calculateTotalCost('DNA Pooling', totalSamples),
+                    soilPooling: this.calculateTotalCost('Soil pooling', totalSamples),
+                    semiPooled: this.calculateTotalCost('Semi-pooled', totalSamples)
+                }
+            };
             
-            // Show warning dialog if any consumable is insufficient
-            if (this.consumableWarnings.length > 0) {
-                this.showConsumableWarningDialog = true;
-            }
+            this.resultItems = [
+                results.totalReads,
+                results.sequencingRuns,
+                results.cost
+            ];
             
-            this.message = `Total cost estimate: $${totalCost}\n` +
-                          `Labor cost: $${laborCost} (${pcrHours + dnaExtractionHours} hours)\n` +
-                          `- DNA extraction: $${dnaExtractionHours * this.personalHourRate} (${dnaExtractionHours} hours)\n` +
-                          `- PCR work: $${pcrHours * this.personalHourRate} (${pcrHours} hours)\n` +
-                          `Consumables cost: $${consumablesCost} (${nrOfSamplesForPCR} samples)\n` +
-                          `Library cost: $${libraryCost.toFixed(1)}\n` +
-                          `Sequencing cost: $${sequencingCost.toFixed(1)} (${nrOfSamplesForPCR} samples)`;
+            this.showResults = true;
+            this.message = 'Calculation completed successfully. See comparison table below.';
             this.isBlue = true;
+        },
+        
+        calculateTotalReads(method, totalSamples) {
+            let samples, poolFactor;
             
-            console.log('Form submitted:', {
-                strategy: this.selectedStrategy,
-                sites: this.numSites,
-                samples: this.numSamples,
-                nrOfSamplesForExtraction: nrOfSamplesForExtraction,
-                nrOfSamplesForPCR: nrOfSamplesForPCR,
-                dnaExtractionHours: dnaExtractionHours,
-                pcrHours: pcrHours,
-                laborCost: laborCost,
-                consumablesCost: this.calculateConsumablesCost(nrOfSamplesForPCR),
-                totalCost: totalCost
-            });
-        },
-
-        // Consumables table methods
-        addConsumable() {
-            this.editedIndex = -1;
-            this.editedItem = Object.assign({}, this.defaultItem);
-            this.consumableDialog = true;
-        },
-
-        editConsumable(item) {
-            this.editedIndex = this.consumables.indexOf(item);
-            this.editedItem = Object.assign({}, item);
-            this.consumableDialog = true;
-        },
-
-        deleteConsumable(item) {
-            const index = this.consumables.indexOf(item);
-            if (confirm('Are you sure you want to delete this item?')) {
-                this.consumables.splice(index, 1);
+            switch(method) {
+                case 'Unpooled':
+                    return totalSamples * this.requiredReads;
+                case 'DNA Pooling':
+                    samples = totalSamples;
+                    poolFactor = Math.max(1, Math.floor(samples / this.numSemipools));
+                    return (samples / poolFactor) * this.requiredReads * (this.poolingEffect / 10000);
+                case 'Soil pooling':
+                    samples = this.numSites;
+                    return samples * this.requiredReads * (this.poolingEffect / 10000);
+                case 'Semi-pooled':
+                    samples = this.numSites * this.numSemipools;
+                    return samples * this.requiredReads * (this.poolingEffect / 15000);
+                default:
+                    return 0;
             }
         },
-
-        closeConsumableDialog() {
-            this.consumableDialog = false;
-            this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem);
-                this.editedIndex = -1;
-            });
+        
+        calculateSequencingRuns(method, totalSamples) {
+            const totalReads = this.calculateTotalReads(method, totalSamples);
+            const runs = Math.ceil(totalReads / this.sequencingThroughput);
+            return runs;
         },
-
-        saveConsumable() {
-            if (!this.editedItem.name || !this.editedItem.category || !this.editedItem.price || !this.editedItem.totalVolume || !this.editedItem.volumePerSample) {
-                alert('Please fill in all fields, including category');
-                return;
+        
+        calculateTotalCost(method, totalSamples) {
+            let dnaExtractionSamples, pcrSamples, sequencingRuns;
+            
+            switch(method) {
+                case 'Unpooled':
+                    dnaExtractionSamples = totalSamples;
+                    pcrSamples = totalSamples;
+                    break;
+                case 'DNA Pooling':
+                    dnaExtractionSamples = totalSamples;
+                    pcrSamples = Math.max(1, Math.floor(totalSamples / this.numSemipools));
+                    break;
+                case 'Soil pooling':
+                    dnaExtractionSamples = this.numSites;
+                    pcrSamples = this.numSites;
+                    break;
+                case 'Semi-pooled':
+                    dnaExtractionSamples = totalSamples;
+                    pcrSamples = this.numSites * this.numSemipools;
+                    break;
+                default:
+                    dnaExtractionSamples = 0;
+                    pcrSamples = 0;
             }
-
-            if (this.editedIndex > -1) {
-                Object.assign(this.consumables[this.editedIndex], this.editedItem);
-            } else {
-                this.consumables.push(this.editedItem);
+            
+            sequencingRuns = this.calculateSequencingRuns(method, totalSamples);
+            
+            const dnaExtractCost = dnaExtractionSamples * this.dnaExtractionCost;
+            const pcrCost = pcrSamples * this.pcrCost;
+            const sequencingCost = sequencingRuns * this.librarySequencingCost;
+            
+            return Math.round(dnaExtractCost + pcrCost + sequencingCost);
+        },
+        
+        updateThroughput() {
+            // Only update if user hasn't manually changed the value
+            if (!this.userOverrideThroughput && this.sequencingPlatform) {
+                this.sequencingThroughput = this.platformThroughputs[this.sequencingPlatform];
             }
-            this.closeConsumableDialog();
         },
-
-        calculateConsumablesCost(nrOfSamplesForPCR, nrOfSamplesForExtraction) {
-            this.consumableWarnings = [];
-            return this.consumables.reduce((total, item) => {
-                let relevantSamples = 0;
-                if (item.category === 'DNA extraction') {
-                    relevantSamples = nrOfSamplesForExtraction;
-                } else if (item.category === 'PCR') {
-                    relevantSamples = nrOfSamplesForPCR;
-                }
-                const totalVolumeNeeded = item.volumePerSample * relevantSamples;
-                if (totalVolumeNeeded > item.totalVolume) {
-                    this.consumableWarnings.push(`Not enough '${item.name}' for ${item.category}: need ${totalVolumeNeeded}, have ${item.totalVolume}`);
-                }
-                const unitsNeeded = totalVolumeNeeded / item.totalVolume;
-                return total + (unitsNeeded * item.price);
-            }, 0);
+        
+        onThroughputInput() {
+            // Mark that user has manually changed the throughput
+            this.userOverrideThroughput = true;
         },
-        calculateSequencingCost(nrOfSamplesForPCR) {
-            let sequencingCost = nrOfSamplesForPCR * this.pricePerSample;
-            return sequencingCost;
+        
+        resetThroughputOverride() {
+            // Reset the override flag and update with platform default
+            this.userOverrideThroughput = false;
+            this.updateThroughput();
         }
     },
     watch: {
-        organism(newValue) {
-            if (this.selectedStrategy === 'Unpooled') {
-                this.sequencingDepth = 100;
-                return;
+        sequencingPlatform(newValue) {
+            if (newValue) {
+                this.updateThroughput();
             }
-            
-            switch(newValue) {
-                case 'Bacteria':
-                    this.sequencingDepth = 25;
-                    break;
-                case 'Animal':
-                    this.sequencingDepth = 100;
-                    break;
-                case 'Fungi':
-                    if (this.selectedStrategy === 'Soil pooling') {
-                        this.sequencingDepth = 100;
-                    } else if (this.selectedStrategy === 'DNA Pooling') {
-                        this.sequencingDepth = 50;
-                    } else {
-                        this.sequencingDepth = 100;
-                    }
-                    break;
-                default:
-                    this.sequencingDepth = 100;
-            }
-        },
-        selectedStrategy(newValue) {
-            if (newValue === 'Unpooled') {
-                this.sequencingDepth = 100;
-                return;
-            }
-            
-            if (this.organism === 'Fungi') {
-                if (newValue === 'Soil pooling') {
-                    this.sequencingDepth = 100;
-                } else if (newValue === 'DNA Pooling') {
-                    this.sequencingDepth = 50;
-                }
-            }
-        },
-        '$data': {
-            handler(newValue) {
-                if (this.selectedStrategy) {
-                    let nrOfSamplesForExtraction;
-                    if (this.selectedStrategy === 'Soil pooling') {
-                        nrOfSamplesForExtraction = this.numSites * this.numSamples / this.poolingNumber;
-                    } else {
-                        nrOfSamplesForExtraction = this.numSites * this.numSamples;
-                    }
-                    this.storageOfPlatform = nrOfSamplesForExtraction * (this.sampleSequencingDepth);
-                }
-            },
-            deep: true
         }
     },
     mounted() {
