@@ -21,16 +21,17 @@ new Vue({
         // Sequencing parameters
         requiredReads: 10000,
         poolingEffect: 5000,
-        sequencingPlatform: null,
-        platforms: ['Illumina MiSeq', 'Illumina NextSeq', 'Illumina NovaSeq', 'PacBio', 'Oxford Nanopore', 'Other'],
-        sequencingThroughput: 15000000,
+        sequencingPlatform: 'PacBio Sequel II',
+        platforms: ['Illumina MiSeq', 'Illumina NextSeq', 'Illumina NovaSeq', 'PacBio Sequel II', 'PacBio Revio', 'Oxford Nanopore', 'Other'],
+        sequencingThroughput: 8000000,
         platformThroughputs: {
-            'Illumina MiSeq': 25000000,     // ~25M reads per run
-            'Illumina NextSeq': 400000000,  // ~400M reads per run
-            'Illumina NovaSeq': 6000000000, // ~6B reads per run (high-output)
-            'PacBio': 4000000,              // ~4M reads per SMRT cell
-            'Oxford Nanopore': 20000000,    // ~20M reads for PromethION flow cell
-            'Other': 15000000               // Default value for Other
+            'Illumina MiSeq':   25000000,    // ~25M reads per run (V3 600 cycle kit)
+            'Illumina NextSeq': 400000000,   // ~400M reads per run (high output)
+            'Illumina NovaSeq': 10000000000, // ~10B reads per run (S4 flow cell)
+            'PacBio Sequel II': 8000000,     // ~8M HiFi reads per SMRT cell
+            'PacBio Revio':     25000000,    // ~25M HiFi reads per SMRT cell
+            'Oxford Nanopore':  50000000,    // ~50M reads for PromethION flow cell
+            'Other':            15000000     // Default value for a user-defined platform
         },
         userOverrideThroughput: false,      // Track if user manually changed the throughput value
         
@@ -73,7 +74,7 @@ new Vue({
                     semiPooled: this.calculateSequencingRuns('Semi-pooled', totalSamples)
                 },
                 cost: {
-                    metric: 'Expected cost ($)',
+                    metric: 'Expected cost (€)',
                     unpooled: this.calculateTotalCost('Unpooled', totalSamples),
                     dnaPooling: this.calculateTotalCost('DNA Pooling', totalSamples),
                     soilPooling: this.calculateTotalCost('Soil pooling', totalSamples),
