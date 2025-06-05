@@ -122,7 +122,7 @@
                                                 <div class="d-flex align-center">
                                                     <v-text-field
                                                         v-model.number="numSemipools"
-                                                        label="Pooling number"
+                                                        label="Number of samples per pooling sample"
                                                         type="number"
                                                         outlined
                                                         min="1"
@@ -159,7 +159,7 @@
                                                                     label="DNA extraction (per sample)"
                                                                     type="number"
                                                                     outlined
-                                                                    prefix="€"
+                                                                    prefix="💶"
                                                                     min="0"
                                                                     :rules="[v => v >= 0 || 'Value must be greater than or equal to 0']"
                                                                     class="flex-grow-1"
@@ -187,7 +187,7 @@
                                                                     label="PCR (per sample)"
                                                                     type="number"
                                                                     outlined
-                                                                    prefix="€"
+                                                                    prefix="💶"
                                                                     min="0"
                                                                     :rules="[v => v >= 0 || 'Value must be greater than or equal to 0']"
                                                                     class="flex-grow-1"
@@ -215,7 +215,7 @@
                                                                     label="Library preparation and sequencing (per run)"
                                                                     type="number"
                                                                     outlined
-                                                                    prefix="€"
+                                                                    prefix="💶"
                                                                     min="0"
                                                                     :rules="[v => v >= 0 || 'Value must be greater than or equal to 0']"
                                                                     class="flex-grow-1"
@@ -279,9 +279,9 @@
                                                                 <v-slider
                                                                     v-model="poolingEffect"
                                                                     min="0"
-                                                                    max="2"
+                                                                    max="10"
                                                                     step="0.01"
-                                                                    label="Pooling effect"
+                                                                    label="Percentage of reads"
                                                                     thumb-label="always"
                                                                     :thumb-size="24"
                                                                     class="flex-grow-1"
@@ -298,10 +298,31 @@
                                                                             mdi-information-outline
                                                                         </v-icon>
                                                                     </template>
-                                                                    <span>The factor representing how pooling affects required sequencing depth (higher values result in more sequencing needed for pools)</span>
+                                                                    <span>The percentage of total reads of individual samples using in pooling samples</span>
                                                                 </v-tooltip>
                                                             </div>
-                                                        </v-col>
+                                                            
+                                                            <!-- ⚠️ Pooling effect warnings go here -->
+                                                            <v-alert
+                                                            v-if="poolingEffect > recommendedPoolingEffect"
+                                                            type="warning"
+                                                            dense
+                                                            text
+                                                            class="mt-2"
+                                                            >
+                                                            Pooling effect is greater than 1 — this may result in inflated sequencing estimates.
+                                                            </v-alert>
+
+                                                            <v-alert
+                                                            v-else-if="poolingEffect < recommendedPoolingEffect"
+                                                            type="warning"
+                                                            dense
+                                                            text
+                                                            class="mt-2"
+                                                            >
+                                                            Pooling effect is lower than recommended for {{ selectedObject }} (recommended: {{ recommendedPoolingEffect }})
+                                                            </v-alert>
+                                                            </v-col>
                                                         <v-col cols="12" md="6">
                                                             <div class="d-flex align-center">
                                                                 <v-select
