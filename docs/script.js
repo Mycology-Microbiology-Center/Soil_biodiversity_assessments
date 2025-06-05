@@ -12,6 +12,8 @@ new Vue({
         numSites: 1,
         numSamples: 10,
         numSemipools: 9,
+        selectedObject: 'Fungi',
+
         
         // Cost inputs
         dnaExtractionCost: 5,
@@ -20,7 +22,7 @@ new Vue({
         
         // Sequencing parameters
         requiredReads: 10000,
-        poolingEffect: 5000,
+        poolingEffect: 0.5,
         sequencingPlatform: 'PacBio Sequel II',
         platforms: ['Illumina MiSeq', 'Illumina NextSeq', 'Illumina NovaSeq', 'PacBio Sequel II', 'PacBio Revio', 'Oxford Nanopore', 'Other'],
         sequencingThroughput: 8000000,
@@ -102,17 +104,28 @@ new Vue({
                 case 'DNA Pooling':
                     samples = totalSamples;
                     poolFactor = Math.max(1, Math.floor(samples / this.numSemipools));
-                    return (samples / poolFactor) * this.requiredReads * (this.poolingEffect / 10000);
+                    return this.requiredReads * (this.poolingEffect * samples);
                 case 'Soil pooling':
                     samples = this.numSites;
-                    return samples * this.requiredReads * (this.poolingEffect / 10000);
+                    return this.requiredReads * (this.poolingEffect * totalSamples);
                 case 'Semi-pooled':
                     samples = this.numSites * this.numSemipools;
-                    return samples * this.requiredReads * (this.poolingEffect / 15000);
+                    return this.requiredReads * (this.poolingEffect * totalSamples);
                 default:
                     return 0;
             }
+
         },
+
+        onObjectChange() {     
+                    if (this.selectedObject === 'Bacteria') {
+                    this.poolingEffect = 0.25;
+                    } else if (this.selectedObject === 'Fungi') {
+                    this.poolingEffect = 0.75;
+                    } else if (this.selectedObject === 'Animal') {
+                    this.poolingEffect = 1;
+                    }
+                        }
         
         calculateSequencingRuns(method, totalSamples) {
             const totalReads = this.calculateTotalReads(method, totalSamples);
