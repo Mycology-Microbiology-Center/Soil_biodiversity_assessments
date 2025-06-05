@@ -12,7 +12,7 @@ new Vue({
         numSites: 1,
         numSamples: 10,
         numSemipools: 9,
-        selectedObject: 'Fungi',
+        selectedObject: null,
 
         
         // Cost inputs
@@ -48,6 +48,7 @@ new Vue({
         ],
         resultItems: []
     },
+    
     methods: {
         buttonClicked() {
             // Validate form
@@ -94,7 +95,16 @@ new Vue({
             this.message = 'Calculation completed successfully. See comparison table below.';
             this.isBlue = true;
         },
-        
+        onObjectChange() {     
+            if (this.selectedObject === 'Bacteria') {
+            this.poolingEffect = 0.25;
+            } else if (this.selectedObject === 'Fungi') {
+            this.poolingEffect = 0.75;
+            } else if (this.selectedObject === 'Animal') {
+            this.poolingEffect = 1;
+            }
+                },
+                
         calculateTotalReads(method, totalSamples) {
             let samples, poolFactor;
             
@@ -117,16 +127,8 @@ new Vue({
 
         },
 
-        onObjectChange() {     
-                    if (this.selectedObject === 'Bacteria') {
-                    this.poolingEffect = 0.25;
-                    } else if (this.selectedObject === 'Fungi') {
-                    this.poolingEffect = 0.75;
-                    } else if (this.selectedObject === 'Animal') {
-                    this.poolingEffect = 1;
-                    }
-                        }
-        
+
+
         calculateSequencingRuns(method, totalSamples) {
             const totalReads = this.calculateTotalReads(method, totalSamples);
             const runs = Math.ceil(totalReads / this.sequencingThroughput);
