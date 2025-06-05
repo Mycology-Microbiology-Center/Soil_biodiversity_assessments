@@ -37,16 +37,33 @@
                                 <v-card-text>
                                     <v-form>
                                         <v-row>
-                                        <!-- Experimental design -->
-                                        <v-col cols="12" md="4">
-                                        <v-select
-                                        v-model="selectedObject"
-                                        :items="['Bacteria', 'Fungi', 'Animal']"
-                                        label="Select Object"
-                                        outlined
-                                        @change="onObjectChange"
-                                        ></v-select>
-                                        </v-col>
+                                            <!-- Experimental design -->
+                                            <v-col cols="12" md="4">
+                                                <div class="d-flex align-center">
+                                                    <v-select
+                                                  v-model="selectedObject"
+                                                  :items="['Bacteria', 'Fungi', 'Animal']"
+                                                  label="Select Object"
+                                                  outlined
+                                                  class="flex-grow-1"
+                                                  @change="onObjectChange"
+                                                ></v-select>
+                                                    <v-tooltip bottom>
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <v-icon
+                                                                color="grey"
+                                                                dark
+                                                                v-bind="attrs"
+                                                                v-on="on"
+                                                                class="ml-2"
+                                                            >
+                                                                mdi-information-outline
+                                                            </v-icon>
+                                                        </template>
+                                                        <span>The study objects being selected</span>
+                                                    </v-tooltip>
+                                                </div>
+                                            </v-col>
                                             <v-col cols="12" md="4">
                                                 <div class="d-flex align-center">
                                                     <v-text-field
