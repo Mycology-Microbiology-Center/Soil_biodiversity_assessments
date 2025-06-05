@@ -8,7 +8,7 @@ new Vue({
         isBlue: true,
         
         // Experimental design data
-        poolingMethod: ['Unpooled', 'DNA Pooling', 'Soil pooling', 'Semi-pooled'],
+        poolingMethod: ['Unpooled', 'DNA Pooling', 'Soil pooling'],
         numSites: 1,
         numSamples: 10,
         numSemipools: 9,
@@ -43,11 +43,23 @@ new Vue({
             { text: 'Metric', value: 'metric', align: 'start', sortable: false },
             { text: 'Unpooled', value: 'unpooled', align: 'center', sortable: false },
             { text: 'DNA Pooling', value: 'dnaPooling', align: 'center', sortable: false },
-            { text: 'Soil pooling', value: 'soilPooling', align: 'center', sortable: false },
-            { text: 'Semi-pooled', value: 'semiPooled', align: 'center', sortable: false }
-        ],
+            { text: 'Soil pooling', value: 'soilPooling', align: 'center', sortable: false }
+                ],
         resultItems: []
     },
+
+    computed: {
+        recommendedPoolingEffect() {
+          if (!this.selectedObject) return 1;
+          switch (this.selectedObject) {
+            case 'Bacteria': return 0.25;
+            case 'Fungi': return 0.75;
+            case 'Animal': return 1;
+            default: return 1;
+          }
+        }
+      },
+      
     
     methods: {
         buttonClicked() {
@@ -67,28 +79,46 @@ new Vue({
                     unpooled: this.calculateTotalReads('Unpooled', totalSamples),
                     dnaPooling: this.calculateTotalReads('DNA Pooling', totalSamples),
                     soilPooling: this.calculateTotalReads('Soil pooling', totalSamples),
-                    semiPooled: this.calculateTotalReads('Semi-pooled', totalSamples)
                 },
                 sequencingRuns: {
                     metric: 'Number of sequencing runs',
                     unpooled: this.calculateSequencingRuns('Unpooled', totalSamples),
                     dnaPooling: this.calculateSequencingRuns('DNA Pooling', totalSamples),
                     soilPooling: this.calculateSequencingRuns('Soil pooling', totalSamples),
-                    semiPooled: this.calculateSequencingRuns('Semi-pooled', totalSamples)
                 },
-                cost: {
-                    metric: 'Expected cost (€)',
+                total: {
+                    metric: 'Total cost (💶)',
                     unpooled: this.calculateTotalCost('Unpooled', totalSamples),
                     dnaPooling: this.calculateTotalCost('DNA Pooling', totalSamples),
                     soilPooling: this.calculateTotalCost('Soil pooling', totalSamples),
-                    semiPooled: this.calculateTotalCost('Semi-pooled', totalSamples)
-                }
+                },
+                costExtraction: {
+                    metric: ' - DNA extraction (💶)',
+                    unpooled: this.calculateDnaExtractionCost('Unpooled', totalSamples),
+                    dnaPooling: this.calculateDnaExtractionCost('DNA Pooling', totalSamples),
+                    soilPooling: this.calculateDnaExtractionCost('Soil pooling', totalSamples),
+                  },
+                  costPCR: {
+                    metric: ' - PCR (💶)',
+                    unpooled: this.calculatePcrCost('Unpooled', totalSamples),
+                    dnaPooling: this.calculatePcrCost('DNA Pooling', totalSamples),
+                    soilPooling: this.calculatePcrCost('Soil pooling', totalSamples),
+                  },
+                  costSequencing: {
+                    metric: ' - Sequencing (💶)',
+                    unpooled: this.calculateSequencingCost('Unpooled', totalSamples),
+                    dnaPooling: this.calculateSequencingCost('DNA Pooling', totalSamples),
+                    soilPooling: this.calculateSequencingCost('Soil pooling', totalSamples),
+                  }
             };
             
             this.resultItems = [
                 results.totalReads,
                 results.sequencingRuns,
-                results.cost
+                results.total,
+                results.costExtraction,
+                results.costPCR,
+                results.costSequencing
             ];
             
             this.showResults = true;
@@ -104,7 +134,7 @@ new Vue({
             this.poolingEffect = 1;
             }
                 },
-                
+
         calculateTotalReads(method, totalSamples) {
             let samples, poolFactor;
             
@@ -113,15 +143,11 @@ new Vue({
                     return totalSamples * this.requiredReads;
                 case 'DNA Pooling':
                     samples = totalSamples;
-                    poolFactor = Math.max(1, Math.floor(samples / this.numSemipools));
-                    return this.requiredReads * (this.poolingEffect * samples);
+                    return this.requiredReads * (this.poolingEffect * this.numSemipools);
                 case 'Soil pooling':
                     samples = this.numSites;
-                    return this.requiredReads * (this.poolingEffect * totalSamples);
-                case 'Semi-pooled':
-                    samples = this.numSites * this.numSemipools;
-                    return this.requiredReads * (this.poolingEffect * totalSamples);
-                default:
+                    return this.requiredReads * (this.poolingEffect * this.numSemipools);
+                 default:
                     return 0;
             }
 
@@ -135,6 +161,76 @@ new Vue({
             return runs;
         },
         
+        calculateDnaExtractionCost(method, totalSamples) {
+            let dnaExtractionSamples, pcrSamples, sequencingRuns;
+            
+            switch(method) {
+                case 'Unpooled':
+                    dnaExtractionSamples = totalSamples;
+                    pcrSamples = totalSamples;
+                    break;
+                case 'DNA Pooling':
+                    dnaExtractionSamples = totalSamples;
+                    pcrSamples = Math.max(1, Math.floor(totalSamples / this.numSemipools));
+                    break;
+                case 'Soil pooling':
+                    dnaExtractionSamples = this.numSites;
+                    pcrSamples = this.numSites;
+                    break;
+                default:
+                    dnaExtractionSamples = 0;
+                    pcrSamples = 0;
+            }
+            return dnaExtractionSamples * this.dnaExtractionCost;
+          },
+          
+          calculatePcrCost(method, totalSamples) {
+            let dnaExtractionSamples, pcrSamples, sequencingRuns;
+            
+            switch(method) {
+                case 'Unpooled':
+                    dnaExtractionSamples = totalSamples;
+                    pcrSamples = totalSamples;
+                    break;
+                case 'DNA Pooling':
+                    dnaExtractionSamples = totalSamples;
+                    pcrSamples = Math.max(1, Math.floor(totalSamples / this.numSemipools));
+                    break;
+                case 'Soil pooling':
+                    dnaExtractionSamples = this.numSites;
+                    pcrSamples = this.numSites;
+                    break;
+                default:
+                    dnaExtractionSamples = 0;
+                    pcrSamples = 0;
+            }
+            return pcrSamples * this.pcrCost;
+          },
+          
+          calculateSequencingCost(method, totalSamples) {
+            let dnaExtractionSamples, pcrSamples, sequencingRuns;
+            
+            switch(method) {
+                case 'Unpooled':
+                    dnaExtractionSamples = totalSamples;
+                    pcrSamples = totalSamples;
+                    break;
+                case 'DNA Pooling':
+                    dnaExtractionSamples = totalSamples;
+                    pcrSamples = Math.max(1, Math.floor(totalSamples / this.numSemipools));
+                    break;
+                case 'Soil pooling':
+                    dnaExtractionSamples = this.numSites;
+                    pcrSamples = this.numSites;
+                    break;
+                default:
+                    dnaExtractionSamples = 0;
+                    pcrSamples = 0;
+            }
+            sequencingRuns = this.calculateSequencingRuns(method, totalSamples);
+            return sequencingRuns * this.librarySequencingCost;
+          },
+          
         calculateTotalCost(method, totalSamples) {
             let dnaExtractionSamples, pcrSamples, sequencingRuns;
             
@@ -151,10 +247,6 @@ new Vue({
                     dnaExtractionSamples = this.numSites;
                     pcrSamples = this.numSites;
                     break;
-                case 'Semi-pooled':
-                    dnaExtractionSamples = totalSamples;
-                    pcrSamples = this.numSites * this.numSemipools;
-                    break;
                 default:
                     dnaExtractionSamples = 0;
                     pcrSamples = 0;
@@ -166,7 +258,7 @@ new Vue({
             const pcrCost = pcrSamples * this.pcrCost;
             const sequencingCost = sequencingRuns * this.librarySequencingCost;
             
-            return Math.round(dnaExtractCost + pcrCost + sequencingCost);
+            return  Math.round(dnaExtractCost + pcrCost + sequencingCost);
         },
         
         updateThroughput() {
