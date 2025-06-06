@@ -278,6 +278,41 @@
                                                                     <span>The target number of sequencing reads needed per individual sample for adequate coverage (typically 5,000-50,000 for amplicon sequencing)</span>
                                                                 </v-tooltip>
                                                             </div>
+                                                            
+                                                            <!-- Sequencing Capacity Information -->
+                                                            <v-card 
+                                                                outlined 
+                                                                class="mt-3 pa-3" 
+                                                                v-if="sequencingThroughput && requiredReads"
+                                                                :color="sequencingCapacity.utilizationPercent > 100 ? 'orange lighten-4' : 'blue lighten-5'"
+                                                            >
+                                                                <div class="text-subtitle-2 mb-2" style="color: #1976d2;">
+                                                                    📊 Sequencing capacity analysis
+                                                                </div>
+                                                                <div class="text-body-2">
+                                                                    <div><strong>Max samples per run (accounting for filtering losses):</strong> {{ sequencingCapacity.maxSamples.toLocaleString() }}</div>
+                                                                    <div><strong>Current sample count:</strong> {{ sequencingCapacity.currentSamples.toLocaleString() }}</div>
+                                                                    <div><strong>Remaining capacity:</strong> 
+                                                                        <span :class="sequencingCapacity.remainingCapacity < 0 ? 'orange--text' : 'green--text'">
+                                                                            {{ sequencingCapacity.remainingCapacity.toLocaleString() }} samples
+                                                                        </span>
+                                                                    </div>
+                                                                    <div><strong>Platform utilization:</strong> 
+                                                                        <span :class="sequencingCapacity.utilizationPercent > 100 ? 'orange--text font-weight-bold' : ''">
+                                                                            {{ sequencingCapacity.utilizationPercent }}%
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                                <v-alert 
+                                                                    v-if="sequencingCapacity.utilizationPercent > 100" 
+                                                                    type="warning" 
+                                                                    dense 
+                                                                    text 
+                                                                    class="mt-2 mb-0"
+                                                                >
+                                                                    ⚠️ Current sample count exceeds platform capacity for a signle run, mutiple sequencing runs are needed.
+                                                                </v-alert>
+                                                            </v-card>
                                                         </v-col>
                                                         <v-col cols="12" md="6">
                                                             <div class="d-flex align-center">
