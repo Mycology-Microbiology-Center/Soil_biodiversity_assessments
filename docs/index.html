@@ -434,31 +434,22 @@
                                             </v-col>
                                         </v-row>
                                         
-                                        <v-btn 
-                                            color="black" 
-                                            @click="buttonClicked"
-                                            outlined
-                                            style="background-color: white; width: 150px; border: 1px solid gray;"
-                                            class="mt-4"
-                                        >
-                                            Calculate
-                                        </v-btn>
-                                        
-                                        <!-- Results Table -->
-                                        <v-card class="mt-4" v-if="showResults">
-                                            <v-data-table
-                                                :headers="resultHeaders"
-                                                :items="resultItems"
-                                                hide-default-footer
-                                                disable-sort
-                                                class="results-table"
-                                            ></v-data-table>
-                                        </v-card>
-                                    </v-form>
-                                    
-                                    <p :class="{ 'blue--text': isBlue, 'red--text': !isBlue, 'message-text': true }" class="mt-4">
-                                        {{ message }}
-                                    </p>
+                                                                <!-- Results Section -->
+                        <div v-if="isValidConfiguration" class="mt-4">
+                            <v-card-title style="padding-left: 0px; color: black;" class="d-flex align-left pt-6">
+                                Results
+                            </v-card-title>
+                            <v-card>
+                                <v-data-table
+                                    :headers="resultHeaders"
+                                    :items="calculatedResults"
+                                    hide-default-footer
+                                    disable-sort
+                                    class="results-table"
+                                ></v-data-table>
+                            </v-card>
+                        </div>
+                    </v-form>
                                 </v-card-text>
                             </v-card>
                         </v-col>

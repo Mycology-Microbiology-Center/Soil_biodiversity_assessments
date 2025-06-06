@@ -4,8 +4,6 @@ new Vue({
     vuetify: new Vuetify(),
     data: {
         title: 'Experiment Cost Calculator',
-        message: 'Configure your parameters and click Calculate',
-        isBlue: true,
         
         // Experimental design data
         poolingMethod: ['Unpooled', 'DNA Pooling', 'Soil pooling'],
@@ -38,14 +36,12 @@ new Vue({
         userOverrideThroughput: false,      // Track if user manually changed the throughput value
         
         // Results data
-        showResults: false,
         resultHeaders: [
             { text: 'Metric', value: 'metric', align: 'start', sortable: false },
             { text: 'Unpooled', value: 'unpooled', align: 'center', sortable: false },
             { text: 'DNA Pooling', value: 'dnaPooling', align: 'center', sortable: false },
             { text: 'Soil pooling', value: 'soilPooling', align: 'center', sortable: false }
-                ],
-        resultItems: []
+                ]
     },
 
     computed: {
@@ -84,74 +80,79 @@ new Vue({
             remainingCapacity,
             utilizationPercent
           };
+        },
+        
+        isValidConfiguration() {
+          return this.sequencingPlatform && 
+                 this.numSites >= 1 && 
+                 this.numSamples >= 1 &&
+                 this.numSemipools >= 1 &&
+                 this.requiredReads > 0 &&
+                 this.sequencingThroughput > 0 &&
+                 this.dnaExtractionCost >= 0 &&
+                 this.pcrCost >= 0 &&
+                 this.librarySequencingCost >= 0;
+        },
+        
+        totalSamples() {
+          return this.numSites * this.numSamples;
+        },
+        
+        calculatedResults() {
+          if (!this.isValidConfiguration) return [];
+          
+          const results = {
+            totalReads: {
+              metric: 'Total number of reads required',
+              unpooled: this.calculateTotalReads('Unpooled', this.totalSamples),
+              dnaPooling: this.calculateTotalReads('DNA Pooling', this.totalSamples),
+              soilPooling: this.calculateTotalReads('Soil pooling', this.totalSamples),
+            },
+            sequencingRuns: {
+              metric: 'Number of sequencing runs',
+              unpooled: this.calculateSequencingRuns('Unpooled', this.totalSamples),
+              dnaPooling: this.calculateSequencingRuns('DNA Pooling', this.totalSamples),
+              soilPooling: this.calculateSequencingRuns('Soil pooling', this.totalSamples),
+            },
+            total: {
+              metric: 'Total cost:',
+              unpooled: this.calculateTotalCost('Unpooled', this.totalSamples),
+              dnaPooling: this.calculateTotalCost('DNA Pooling', this.totalSamples),
+              soilPooling: this.calculateTotalCost('Soil pooling', this.totalSamples),
+            },
+            costExtraction: {
+              metric: '    • DNA extraction',
+              unpooled: this.calculateDnaExtractionCost('Unpooled', this.totalSamples),
+              dnaPooling: this.calculateDnaExtractionCost('DNA Pooling', this.totalSamples),
+              soilPooling: this.calculateDnaExtractionCost('Soil pooling', this.totalSamples),
+            },
+            costPCR: {
+              metric: '    • PCR',
+              unpooled: this.calculatePcrCost('Unpooled', this.totalSamples),
+              dnaPooling: this.calculatePcrCost('DNA Pooling', this.totalSamples),
+              soilPooling: this.calculatePcrCost('Soil pooling', this.totalSamples),
+            },
+            costSequencing: {
+              metric: '    • Sequencing',
+              unpooled: this.calculateSequencingCost('Unpooled', this.totalSamples),
+              dnaPooling: this.calculateSequencingCost('DNA Pooling', this.totalSamples),
+              soilPooling: this.calculateSequencingCost('Soil pooling', this.totalSamples),
+            }
+          };
+          
+          return [
+            results.totalReads,
+            results.sequencingRuns,
+            results.total,
+            results.costExtraction,
+            results.costPCR,
+            results.costSequencing
+          ];
         }
       },
       
     
     methods: {
-        buttonClicked() {
-            // Validate form
-            if (!this.sequencingPlatform) {
-                this.message = 'Please select a sequencing platform';
-                this.isBlue = false;
-                return;
-            }
-            
-            const totalSamples = this.numSites * this.numSamples;
-            
-            // Calculate results for each pooling method
-            const results = {
-                totalReads: {
-                    metric: 'Total number of reads required',
-                    unpooled: this.calculateTotalReads('Unpooled', totalSamples),
-                    dnaPooling: this.calculateTotalReads('DNA Pooling', totalSamples),
-                    soilPooling: this.calculateTotalReads('Soil pooling', totalSamples),
-                },
-                sequencingRuns: {
-                    metric: 'Number of sequencing runs',
-                    unpooled: this.calculateSequencingRuns('Unpooled', totalSamples),
-                    dnaPooling: this.calculateSequencingRuns('DNA Pooling', totalSamples),
-                    soilPooling: this.calculateSequencingRuns('Soil pooling', totalSamples),
-                },
-                total: {
-                    metric: 'Total cost:',
-                    unpooled: this.calculateTotalCost('Unpooled', totalSamples),
-                    dnaPooling: this.calculateTotalCost('DNA Pooling', totalSamples),
-                    soilPooling: this.calculateTotalCost('Soil pooling', totalSamples),
-                },
-                costExtraction: {
-                    metric: '    • DNA extraction',
-                    unpooled: this.calculateDnaExtractionCost('Unpooled', totalSamples),
-                    dnaPooling: this.calculateDnaExtractionCost('DNA Pooling', totalSamples),
-                    soilPooling: this.calculateDnaExtractionCost('Soil pooling', totalSamples),
-                  },
-                  costPCR: {
-                    metric: '    • PCR',
-                    unpooled: this.calculatePcrCost('Unpooled', totalSamples),
-                    dnaPooling: this.calculatePcrCost('DNA Pooling', totalSamples),
-                    soilPooling: this.calculatePcrCost('Soil pooling', totalSamples),
-                  },
-                  costSequencing: {
-                    metric: '    • Sequencing',
-                    unpooled: this.calculateSequencingCost('Unpooled', totalSamples),
-                    dnaPooling: this.calculateSequencingCost('DNA Pooling', totalSamples),
-                    soilPooling: this.calculateSequencingCost('Soil pooling', totalSamples),
-                  }
-            };
-            
-            this.resultItems = [
-                results.totalReads,
-                results.sequencingRuns,
-                results.total,
-                results.costExtraction,
-                results.costPCR,
-                results.costSequencing
-            ];
-            
-            this.showResults = true;
-            this.message = 'Calculation completed successfully. See comparison table below.';
-            this.isBlue = true;
-        },
         onObjectChange() {     
             if (this.selectedObject === 'Bacteria') {
             this.poolingEffect = 0.25;
