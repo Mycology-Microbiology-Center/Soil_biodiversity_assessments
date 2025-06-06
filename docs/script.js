@@ -22,16 +22,17 @@ new Vue({
         requiredReads: 10000,
         poolingEffect: 0.5,
         sequencingPlatform: 'PacBio Sequel II',
-        platforms: ['Illumina MiSeq', 'Illumina NextSeq', 'Illumina NovaSeq', 'PacBio Sequel II', 'PacBio Revio', 'Oxford Nanopore', 'Other'],
+        platforms: ['Illumina MiSeq', 'Illumina NextSeq', 'Illumina NovaSeq', 'PacBio Sequel II', 'PacBio Revio', 'Oxford Nanopore', 'Element Biosciences AVITI', 'Other'],
         sequencingThroughput: 8000000,
         platformThroughputs: {
-            'Illumina MiSeq':   25000000,    // ~25M reads per run (V3 600 cycle kit)
-            'Illumina NextSeq': 400000000,   // ~400M reads per run (high output)
-            'Illumina NovaSeq': 10000000000, // ~10B reads per run (S4 flow cell)
-            'PacBio Sequel II': 8000000,     // ~8M HiFi reads per SMRT cell
-            'PacBio Revio':     25000000,    // ~25M HiFi reads per SMRT cell
-            'Oxford Nanopore':  50000000,    // ~50M reads for PromethION flow cell
-            'Other':            15000000     // Default value for a user-defined platform
+            'Illumina MiSeq':            25000000,    // ~25M reads per run (V3 600 cycle kit)
+            'Illumina NextSeq':          400000000,   // ~400M reads per run (high output)
+            'Illumina NovaSeq':          10000000000, // ~10B reads per run (S4 flow cell)
+            'PacBio Sequel II':          8000000,     // ~8M HiFi reads per SMRT cell
+            'PacBio Revio':              25000000,    // ~25M HiFi reads per SMRT cell
+            'Oxford Nanopore':           50000000,    // ~50M reads for PromethION flow cell
+            'Element Biosciences AVITI': 100000000,   // ~100M reads per run ('Medium Output' flow cell)
+            'Other':                     15000000     // Default value for a user-defined platform
         },
         userOverrideThroughput: false,      // Track if user manually changed the throughput value
         
