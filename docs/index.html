@@ -41,12 +41,12 @@
                                     <v-form>
                                         <v-row>
                                             <!-- Experimental design -->
-                                            <v-col cols="12" md="4">
+                                            <v-col cols="12">
                                                 <div class="d-flex align-center">
                                                     <v-select
                                                   v-model="selectedObject"
                                                   :items="['Bacteria', 'Fungi', 'Animal']"
-                                                  label="Select Object"
+                                                  label="Select taxon"
                                                   outlined
                                                   class="flex-grow-1"
                                                   @change="onObjectChange"
@@ -63,7 +63,7 @@
                                                                 mdi-information-outline
                                                             </v-icon>
                                                         </template>
-                                                        <span>The study objects being selected</span>
+                                                        <span>Taxonomic group of the study objects (affects the pooling effect)</span>
                                                     </v-tooltip>
                                                 </div>
                                             </v-col>
