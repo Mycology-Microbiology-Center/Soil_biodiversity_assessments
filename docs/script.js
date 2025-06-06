@@ -57,6 +57,33 @@ new Vue({
             case 'Animal': return 1;
             default: return 1;
           }
+        },
+        
+        sequencingCapacity() {
+          if (!this.sequencingThroughput || !this.requiredReads) {
+            return {
+              maxSamples: 0,
+              currentSamples: 0,
+              remainingCapacity: 0,
+              utilizationPercent: 0
+            };
+          }
+          
+          // Calculate initial reads needed accounting for quality filtering losses
+          // Assuming ~50% of reads may be lost to quality filtering, chimeras, non-specific amplification
+          const qualityLossRate = 0.5; // 50% loss rate
+          const initialReadsNeeded = this.requiredReads / (1 - qualityLossRate);
+          const maxSamples = Math.floor(this.sequencingThroughput / initialReadsNeeded);
+          const currentSamples = this.numSites * this.numSamples;
+          const remainingCapacity = Math.max(0, maxSamples - currentSamples);
+          const utilizationPercent = currentSamples > 0 ? Math.round((currentSamples / maxSamples) * 100) : 0;
+          
+          return {
+            maxSamples,
+            currentSamples,
+            remainingCapacity,
+            utilizationPercent
+          };
         }
       },
       
