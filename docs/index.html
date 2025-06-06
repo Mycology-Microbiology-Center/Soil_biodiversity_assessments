@@ -252,17 +252,42 @@
                                                     <v-row>
                                                         <v-col cols="12" md="6">
                                                             <div class="d-flex align-center">
-                                                                <v-slider
-                                                                    v-model="requiredReads"
-                                                                    min="50"
-                                                                    max="100000"
-                                                                    label="Required number of reads (per sample)"
-                                                                    thumb-label="always"
-                                                                    :thumb-size="50"
-                                                                    track-color="grey lighten-2"
-                                                                    thumb-color="primary"
-                                                                    class="flex-grow-1"
-                                                                ></v-slider>
+                                                                <v-card outlined class="pa-3 flex-grow-1">
+                                                                    <div class="text-subtitle-2 mb-2">Required number of reads (per sample)</div>
+                                                                    <v-row align="center" no-gutters>
+                                                                        <v-col cols="8">
+                                                                            <v-slider
+                                                                                v-model="requiredReads"
+                                                                                min="50"
+                                                                                max="200000"
+                                                                                step="50"
+                                                                                thumb-label
+                                                                                :thumb-size="50"
+                                                                                track-color="grey lighten-2"
+                                                                                thumb-color="primary"
+                                                                                hide-details
+                                                                                class="align-center"
+                                                                            ></v-slider>
+                                                                        </v-col>
+                                                                        <v-col cols="4" class="pl-3">
+                                                                            <v-text-field
+                                                                                v-model.number="requiredReads"
+                                                                                type="number"
+                                                                                min="50"
+                                                                                max="100000"
+                                                                                step="50"
+                                                                                density="compact"
+                                                                                hide-details
+                                                                                outlined
+                                                                                class="mt-0 pt-0"
+                                                                                style="max-width: 120px;"
+                                                                            ></v-text-field>
+                                                                        </v-col>
+                                                                    </v-row>
+                                                                    <div class="text-caption grey--text mt-1">
+                                                                        Typically 5,000-50,000 for amplicon sequencing
+                                                                    </div>
+                                                                </v-card>
                                                                 <v-tooltip bottom>
                                                                     <template v-slot:activator="{ on, attrs }">
                                                                         <v-icon
@@ -316,18 +341,42 @@
                                                         </v-col>
                                                         <v-col cols="12" md="6">
                                                             <div class="d-flex align-center">
-                                                                <v-slider
-                                                                    v-model="poolingEffect"
-                                                                    min="0"
-                                                                    max="10"
-                                                                    step="0.01"
-                                                                    label="Percentage of reads"
-                                                                    thumb-label="always"
-                                                                    :thumb-size="50"
-                                                                    track-color="grey lighten-2"
-                                                                    thumb-color="primary"
-                                                                    class="flex-grow-1"
-                                                                ></v-slider>
+                                                                <v-card outlined class="pa-3 flex-grow-1">
+                                                                    <div class="text-subtitle-2 mb-2">Percentage of reads</div>
+                                                                    <v-row align="center" no-gutters>
+                                                                        <v-col cols="8">
+                                                                            <v-slider
+                                                                                v-model="poolingEffect"
+                                                                                min="0"
+                                                                                max="10"
+                                                                                step="0.01"
+                                                                                thumb-label
+                                                                                :thumb-size="50"
+                                                                                track-color="grey lighten-2"
+                                                                                thumb-color="primary"
+                                                                                hide-details
+                                                                                class="align-center"
+                                                                            ></v-slider>
+                                                                        </v-col>
+                                                                        <v-col cols="4" class="pl-3">
+                                                                            <v-text-field
+                                                                                v-model.number="poolingEffect"
+                                                                                type="number"
+                                                                                min="0"
+                                                                                max="10"
+                                                                                step="0.01"
+                                                                                density="compact"
+                                                                                hide-details
+                                                                                outlined
+                                                                                class="mt-0 pt-0"
+                                                                                style="max-width: 120px;"
+                                                                            ></v-text-field>
+                                                                        </v-col>
+                                                                    </v-row>
+                                                                    <div class="text-caption grey--text mt-1">
+                                                                        The percentage of total reads of individual samples used in pooling samples
+                                                                    </div>
+                                                                </v-card>
                                                                 <v-tooltip bottom>
                                                                     <template v-slot:activator="{ on, attrs }">
                                                                         <v-icon
