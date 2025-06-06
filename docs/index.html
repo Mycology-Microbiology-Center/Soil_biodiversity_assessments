@@ -247,7 +247,7 @@
                                                 </v-card-title>
                                                 <v-card-text class="pa-0">
                                                     <v-row>
-                                                        <v-col cols="16" md="6">
+                                                        <v-col cols="12" md="6">
                                                             <div class="d-flex align-center">
                                                                 <v-slider
                                                                     v-model="requiredReads"
@@ -255,7 +255,9 @@
                                                                     max="100000"
                                                                     label="Required number of reads (per sample)"
                                                                     thumb-label="always"
-                                                                    :thumb-size="45"
+                                                                    :thumb-size="50"
+                                                                    track-color="grey lighten-2"
+                                                                    thumb-color="primary"
                                                                     class="flex-grow-1"
                                                                 ></v-slider>
                                                                 <v-tooltip bottom>
@@ -283,7 +285,9 @@
                                                                     step="0.01"
                                                                     label="Percentage of reads"
                                                                     thumb-label="always"
-                                                                    :thumb-size="24"
+                                                                    :thumb-size="50"
+                                                                    track-color="grey lighten-2"
+                                                                    thumb-color="primary"
                                                                     class="flex-grow-1"
                                                                 ></v-slider>
                                                                 <v-tooltip bottom>
