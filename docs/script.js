@@ -168,13 +168,13 @@ new Vue({
             
             switch(method) {
                 case 'Unpooled':
-                    return totalSamples * this.requiredReads;
+                    return Math.ceil(totalSamples * this.requiredReads);
                 case 'DNA Pooling':
                     samples = totalSamples;
-                    return this.requiredReads * (this.poolingEffect * this.numSemipools);
+                    return Math.ceil(this.requiredReads * (this.poolingEffect * this.numSemipools));
                 case 'Soil pooling':
                     samples = this.numSites;
-                    return this.requiredReads * (this.poolingEffect * this.numSemipools);
+                    return Math.ceil(this.requiredReads * (this.poolingEffect * this.numSemipools));
                  default:
                     return 0;
             }
