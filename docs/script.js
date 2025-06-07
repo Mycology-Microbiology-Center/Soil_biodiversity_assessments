@@ -165,130 +165,104 @@ new Vue({
             }
                 },
 
+        // Total number of reads required
         calculateTotalReads(method, totalSamples) {
-            let samples, poolFactor;
-            
             switch(method) {
                 case 'Unpooled':
+                    // Each sample sequenced individually
                     return Math.ceil(totalSamples * this.requiredReads);
+                    
                 case 'DNA Pooling':
-                    samples = totalSamples;
-                    return Math.ceil(this.requiredReads * (this.poolingEffect * this.numSemipools));
+                    // DNA from all samples within each site is pooled
+                    // Total reads = sites × (all samples per site × pooling effect × required reads per sample)
+                    return Math.ceil(this.numSites * (totalSamples * this.poolingEffect * this.requiredReads));
+                    
                 case 'Soil pooling':
-                    samples = this.numSites;
-                    return Math.ceil(this.requiredReads * (this.poolingEffect * this.numSemipools));
-                 default:
+                    // Soil samples are pooled before DNA extraction within each site
+                    // Total reads = sites × (all samples per site × pooling effect × required reads per sample)
+                    return Math.ceil(this.numSites * (totalSamples * this.poolingEffect * this.requiredReads));
+                    
+                default:
                     return 0;
             }
-
         },
 
-
-
+        // Number of sequencing runs required
         calculateSequencingRuns(method, totalSamples) {
             const totalReads = this.calculateTotalReads(method, totalSamples);
             const runs = Math.ceil(totalReads / this.sequencingThroughput);
             return runs;
         },
         
+        // DNA extraction cost
         calculateDnaExtractionCost(method, totalSamples) {
-            let dnaExtractionSamples, pcrSamples, sequencingRuns;
+            let dnaExtractionSamples;
             
             switch(method) {
                 case 'Unpooled':
+                    // Extract DNA from each individual sample
                     dnaExtractionSamples = totalSamples;
-                    pcrSamples = totalSamples;
                     break;
+                    
                 case 'DNA Pooling':
+                    // Extract DNA from each individual sample (pooling happens after extraction)
                     dnaExtractionSamples = totalSamples;
-                    pcrSamples = Math.max(1, Math.floor(totalSamples / this.numSemipools));
                     break;
+                    
                 case 'Soil pooling':
+                    // Pool soil samples before extraction, so only extract from pooled samples (one per site)
                     dnaExtractionSamples = this.numSites;
-                    pcrSamples = this.numSites;
                     break;
+                    
                 default:
                     dnaExtractionSamples = 0;
-                    pcrSamples = 0;
             }
+            
             return dnaExtractionSamples * this.dnaExtractionCost;
-          },
+        },
           
-          calculatePcrCost(method, totalSamples) {
-            let dnaExtractionSamples, pcrSamples, sequencingRuns;
+        // PCR cost
+        calculatePcrCost(method, totalSamples) {
+            let pcrSamples;
             
             switch(method) {
                 case 'Unpooled':
-                    dnaExtractionSamples = totalSamples;
+                    // PCR each individual sample
                     pcrSamples = totalSamples;
                     break;
+                    
                 case 'DNA Pooling':
-                    dnaExtractionSamples = totalSamples;
-                    pcrSamples = Math.max(1, Math.floor(totalSamples / this.numSemipools));
-                    break;
-                case 'Soil pooling':
-                    dnaExtractionSamples = this.numSites;
+                    // Pool DNA within each site, then PCR the pooled samples (one PCR per site)
                     pcrSamples = this.numSites;
                     break;
+                    
+                case 'Soil pooling':
+                    // Soil is pooled before extraction, so one PCR per site
+                    pcrSamples = this.numSites;
+                    break;
+                    
                 default:
-                    dnaExtractionSamples = 0;
                     pcrSamples = 0;
             }
+            
             return pcrSamples * this.pcrCost;
-          },
+        },
           
-          calculateSequencingCost(method, totalSamples) {
-            let dnaExtractionSamples, pcrSamples, sequencingRuns;
-            
-            switch(method) {
-                case 'Unpooled':
-                    dnaExtractionSamples = totalSamples;
-                    pcrSamples = totalSamples;
-                    break;
-                case 'DNA Pooling':
-                    dnaExtractionSamples = totalSamples;
-                    pcrSamples = Math.max(1, Math.floor(totalSamples / this.numSemipools));
-                    break;
-                case 'Soil pooling':
-                    dnaExtractionSamples = this.numSites;
-                    pcrSamples = this.numSites;
-                    break;
-                default:
-                    dnaExtractionSamples = 0;
-                    pcrSamples = 0;
-            }
-            sequencingRuns = this.calculateSequencingRuns(method, totalSamples);
+        // Sequencing cost
+        calculateSequencingCost(method, totalSamples) {
+            // Sequencing cost is based on the number of sequencing runs needed
+            const sequencingRuns = this.calculateSequencingRuns(method, totalSamples);
             return sequencingRuns * this.librarySequencingCost;
-          },
+        },
           
+        // Total cost
         calculateTotalCost(method, totalSamples) {
-            let dnaExtractionSamples, pcrSamples, sequencingRuns;
+            // Calculate total cost by summing all component costs
+            const dnaExtractionCost = this.calculateDnaExtractionCost(method, totalSamples);
+            const pcrCost = this.calculatePcrCost(method, totalSamples);
+            const sequencingCost = this.calculateSequencingCost(method, totalSamples);
             
-            switch(method) {
-                case 'Unpooled':
-                    dnaExtractionSamples = totalSamples;
-                    pcrSamples = totalSamples;
-                    break;
-                case 'DNA Pooling':
-                    dnaExtractionSamples = totalSamples;
-                    pcrSamples = Math.max(1, Math.floor(totalSamples / this.numSemipools));
-                    break;
-                case 'Soil pooling':
-                    dnaExtractionSamples = this.numSites;
-                    pcrSamples = this.numSites;
-                    break;
-                default:
-                    dnaExtractionSamples = 0;
-                    pcrSamples = 0;
-            }
-            
-            sequencingRuns = this.calculateSequencingRuns(method, totalSamples);
-            
-            const dnaExtractCost = dnaExtractionSamples * this.dnaExtractionCost;
-            const pcrCost = pcrSamples * this.pcrCost;
-            const sequencingCost = sequencingRuns * this.librarySequencingCost;
-            
-            return  Math.round(dnaExtractCost + pcrCost + sequencingCost);
+            return Math.round(dnaExtractionCost + pcrCost + sequencingCost);
         },
         
         updateThroughput() {
