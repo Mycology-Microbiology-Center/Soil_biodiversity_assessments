@@ -125,7 +125,7 @@
                                                 <div class="d-flex align-center">
                                                     <v-text-field
                                                         v-model.number="numSemipools"
-                                                        label="Number of samples per pooling sample"
+                                                        label="Number of semipools per site"
                                                         type="number"
                                                         outlined
                                                         min="1"
@@ -143,9 +143,23 @@
                                                                 mdi-information-outline
                                                             </v-icon>
                                                         </template>
-                                                        <span>The number of samples combined into each pool or the total number of pools when using semi-pooled approach</span>
+                                                        <span>For semi-pooling: the number of pools created by partitioning samples within each site</span>
                                                     </v-tooltip>
                                                 </div>
+                                                
+                                                <!-- Semipool balance warning -->
+                                                <v-alert
+                                                    v-if="numSemipools > 0 && numSamples > 0"
+                                                    :type="semipoolBalance.isBalanced ? 'info' : 'warning'"
+                                                    dense
+                                                    text
+                                                    class="mt-2"
+                                                >
+                                                    <v-icon small class="mr-2">
+                                                        {{ semipoolBalance.isBalanced ? 'mdi-information' : 'mdi-alert' }}
+                                                    </v-icon>
+                                                    {{ semipoolBalance.message }}
+                                                </v-alert>
                                             </v-col>
 
                                             <!-- Costs Section -->

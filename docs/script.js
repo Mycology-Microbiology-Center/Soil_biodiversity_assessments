@@ -6,7 +6,7 @@ new Vue({
         title: 'Experiment Cost Calculator',
         
         // Experimental design data
-        poolingMethod: ['Unpooled', 'DNA Pooling', 'Soil pooling'],
+        poolingMethod: ['Unpooled', 'DNA Pooling', 'Soil pooling', 'Semi-pooling'],
         numSites: 1,
         numSamples: 10,
         numSemipools: 9,
@@ -42,7 +42,8 @@ new Vue({
             { text: 'Metric', value: 'metric', align: 'start', sortable: false },
             { text: 'Unpooled', value: 'unpooled', align: 'center', sortable: false },
             { text: 'DNA Pooling', value: 'dnaPooling', align: 'center', sortable: false },
-            { text: 'Soil pooling', value: 'soilPooling', align: 'center', sortable: false }
+            { text: 'Soil pooling', value: 'soilPooling', align: 'center', sortable: false },
+            { text: 'Semi-pooling', value: 'semiPooling', align: 'center', sortable: false }
                 ]
     },
 
@@ -100,6 +101,28 @@ new Vue({
           return this.numSites * this.numSamples;
         },
         
+        // Distribute samples into semipools
+        semipoolBalance() {
+          if (this.numSemipools <= 0 || this.numSamples <= 0) {
+            return { isBalanced: true, message: '' };
+          }
+          
+          const samplesPerSemipool = Math.floor(this.numSamples / this.numSemipools);
+          const remainder = this.numSamples % this.numSemipools;
+          
+          if (remainder === 0) {
+            return { 
+              isBalanced: true, 
+              message: `${samplesPerSemipool} samples per semipool` 
+            };
+          } else {
+            return { 
+              isBalanced: false, 
+              message: `Uneven distribution: ${remainder} semipool(s) will have ${samplesPerSemipool + 1} samples, ${this.numSemipools - remainder} will have ${samplesPerSemipool} samples` 
+            };
+          }
+        },
+        
         calculatedResults() {
           if (!this.isValidConfiguration) return [];
           
@@ -109,36 +132,42 @@ new Vue({
               unpooled: this.calculateTotalReads('Unpooled', this.totalSamples),
               dnaPooling: this.calculateTotalReads('DNA Pooling', this.totalSamples),
               soilPooling: this.calculateTotalReads('Soil pooling', this.totalSamples),
+              semiPooling: this.calculateTotalReads('Semi-pooling', this.totalSamples),
             },
             sequencingRuns: {
               metric: 'Number of sequencing runs',
               unpooled: this.calculateSequencingRuns('Unpooled', this.totalSamples),
               dnaPooling: this.calculateSequencingRuns('DNA Pooling', this.totalSamples),
               soilPooling: this.calculateSequencingRuns('Soil pooling', this.totalSamples),
+              semiPooling: this.calculateSequencingRuns('Semi-pooling', this.totalSamples),
             },
             total: {
               metric: 'Total cost:',
               unpooled: this.calculateTotalCost('Unpooled', this.totalSamples),
               dnaPooling: this.calculateTotalCost('DNA Pooling', this.totalSamples),
               soilPooling: this.calculateTotalCost('Soil pooling', this.totalSamples),
+              semiPooling: this.calculateTotalCost('Semi-pooling', this.totalSamples),
             },
             costExtraction: {
               metric: '    • DNA extraction',
               unpooled: this.calculateDnaExtractionCost('Unpooled', this.totalSamples),
               dnaPooling: this.calculateDnaExtractionCost('DNA Pooling', this.totalSamples),
               soilPooling: this.calculateDnaExtractionCost('Soil pooling', this.totalSamples),
+              semiPooling: this.calculateDnaExtractionCost('Semi-pooling', this.totalSamples),
             },
             costPCR: {
               metric: '    • PCR',
               unpooled: this.calculatePcrCost('Unpooled', this.totalSamples),
               dnaPooling: this.calculatePcrCost('DNA Pooling', this.totalSamples),
               soilPooling: this.calculatePcrCost('Soil pooling', this.totalSamples),
+              semiPooling: this.calculatePcrCost('Semi-pooling', this.totalSamples),
             },
             costSequencing: {
               metric: '    • Sequencing',
               unpooled: this.calculateSequencingCost('Unpooled', this.totalSamples),
               dnaPooling: this.calculateSequencingCost('DNA Pooling', this.totalSamples),
               soilPooling: this.calculateSequencingCost('Soil pooling', this.totalSamples),
+              semiPooling: this.calculateSequencingCost('Semi-pooling', this.totalSamples),
             }
           };
           
@@ -182,6 +211,13 @@ new Vue({
                     // Total reads = sites × (all samples per site × pooling effect × required reads per sample)
                     return Math.ceil(this.numSites * (totalSamples * this.poolingEffect * this.requiredReads));
                     
+                case 'Semi-pooling':
+                    // Samples within each site are partitioned into semipools, each semipool processed separately
+                    // Total reads = sites × semipools per site × (samples per semipool × pooling effect × required reads per sample)
+                    // This simplifies to: sites × semipools × (numSamples/numSemipools × pooling effect × required reads)
+                    // Which equals: sites × numSamples × pooling effect × required reads
+                    return Math.ceil(this.numSites * (this.numSamples * this.poolingEffect * this.requiredReads));
+                    
                 default:
                     return 0;
             }
@@ -214,6 +250,11 @@ new Vue({
                     dnaExtractionSamples = this.numSites;
                     break;
                     
+                case 'Semi-pooling':
+                    // Samples are pooled into semipools before extraction (one extraction per semipool)
+                    dnaExtractionSamples = this.numSites * this.numSemipools;
+                    break;
+                    
                 default:
                     dnaExtractionSamples = 0;
             }
@@ -239,6 +280,11 @@ new Vue({
                 case 'Soil pooling':
                     // Soil is pooled before extraction, so one PCR per site
                     pcrSamples = this.numSites;
+                    break;
+                    
+                case 'Semi-pooling':
+                    // Each semipool is PCR'd separately (one PCR per semipool)
+                    pcrSamples = this.numSites * this.numSemipools;
                     break;
                     
                 default:
