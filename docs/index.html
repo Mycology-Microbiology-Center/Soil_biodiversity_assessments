@@ -356,11 +356,11 @@
                                                         <v-col cols="12" md="6">
                                                             <div class="d-flex align-center">
                                                                 <v-card outlined class="pa-3 flex-grow-1">
-                                                                    <div class="text-subtitle-2 mb-2">Percentage of reads</div>
+                                                                    <div class="text-subtitle-2 mb-2">Pooling factor</div>
                                                                     <v-row align="center" no-gutters>
                                                                         <v-col cols="8">
                                                                             <v-slider
-                                                                                v-model="poolingEffect"
+                                                                                v-model="poolingFactor"
                                                                                 min="0"
                                                                                 max="10"
                                                                                 step="0.01"
@@ -374,7 +374,7 @@
                                                                         </v-col>
                                                                         <v-col cols="4" class="pl-3">
                                                                             <v-text-field
-                                                                                v-model.number="poolingEffect"
+                                                                                v-model.number="poolingFactor"
                                                                                 type="number"
                                                                                 min="0"
                                                                                 max="10"
@@ -387,10 +387,72 @@
                                                                             ></v-text-field>
                                                                         </v-col>
                                                                     </v-row>
-                                                                    <div class="text-caption grey--text mt-1">
-                                                                        The percentage of total reads of individual samples used in pooling samples
+                                                                                                                                                                                            <div class="text-caption grey--text mt-1">
+                                                                        Multiplier that adjusts sequencing depth based on target organism characteristics when samples are pooled
                                                                     </div>
-                                                                </v-card>
+                                                    
+                                                    <!-- Calculated read numbers -->
+                                                    <v-row class="mt-3" no-gutters>
+                                                        <v-col cols="6" class="pr-1">
+                                                            <div class="d-flex align-center">
+                                                                <v-text-field
+                                                                    :value="Math.round(requiredReads * poolingFactor * numSamples).toLocaleString()"
+                                                                    label="Reads per pooled sample"
+                                                                    type="text"
+                                                                    outlined
+                                                                    readonly
+                                                                    dense
+                                                                    hide-details
+                                                                    class="flex-grow-1"
+                                                                ></v-text-field>
+                                                                <v-tooltip bottom>
+                                                                    <template v-slot:activator="{ on, attrs }">
+                                                                        <v-icon
+                                                                            color="grey"
+                                                                            dark
+                                                                            v-bind="attrs"
+                                                                            v-on="on"
+                                                                            class="ml-1"
+                                                                            small
+                                                                        >
+                                                                            mdi-information-outline
+                                                                        </v-icon>
+                                                                    </template>
+                                                                    <span>Required reads × pooling effect × samples per site: the effective number of reads allocated per pooled sample for DNA/soil pooling methods</span>
+                                                                </v-tooltip>
+                                                            </div>
+                                                        </v-col>
+                                                        <v-col cols="6" class="pl-1">
+                                                            <div class="d-flex align-center">
+                                                                <v-text-field
+                                                                    :value="numSemipools > 0 ? Math.round(requiredReads * numSamples * poolingFactor / numSemipools).toLocaleString() : '0'"
+                                                                    label="Reads per semipool"
+                                                                    type="text"
+                                                                    outlined
+                                                                    readonly
+                                                                    dense
+                                                                    hide-details
+                                                                    class="flex-grow-1"
+                                                                ></v-text-field>
+                                                                <v-tooltip bottom>
+                                                                    <template v-slot:activator="{ on, attrs }">
+                                                                        <v-icon
+                                                                            color="grey"
+                                                                            dark
+                                                                            v-bind="attrs"
+                                                                            v-on="on"
+                                                                            class="ml-1"
+                                                                            small
+                                                                        >
+                                                                            mdi-information-outline
+                                                                        </v-icon>
+                                                                    </template>
+                                                                    <span>Required reads × samples per site × pooling effect ÷ semipools: the effective number of reads allocated per semipool for semi-pooling method</span>
+                                                                </v-tooltip>
+                                                            </div>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-card>
                                                                 <v-tooltip bottom>
                                                                     <template v-slot:activator="{ on, attrs }">
                                                                         <v-icon
@@ -403,29 +465,29 @@
                                                                             mdi-information-outline
                                                                         </v-icon>
                                                                     </template>
-                                                                    <span>The percentage of total reads of individual samples using in pooling samples</span>
+                                                                    <span>Coefficient that adjusts sequencing depth requirements based on the biological characteristics of the target organism when pooling samples</span>
                                                                 </v-tooltip>
                                                             </div>
                                                             
                                                             <!-- ⚠️ Pooling effect warnings go here -->
                                                             <v-alert
-                                                            v-if="poolingEffect > recommendedPoolingEffect"
+                                                            v-if="poolingFactor > recommendedpoolingFactor"
                                                             type="warning"
                                                             dense
                                                             text
                                                             class="mt-2"
                                                             >
-                                                            Pooling effect is greater than 1.
+                                                            Pooling factor is higher than recommended.
                                                             </v-alert>
 
                                                             <v-alert
-                                                            v-else-if="poolingEffect < recommendedPoolingEffect"
+                                                            v-else-if="poolingFactor < recommendedpoolingFactor"
                                                             type="warning"
                                                             dense
                                                             text
                                                             class="mt-2"
                                                             >
-                                                            Pooling effect is lower than recommended for {{ selectedObject }} (recommended: {{ recommendedPoolingEffect }})
+                                                            Pooling factor is lower than recommended for {{ selectedObject }} (recommended: {{ recommendedpoolingFactor }})
                                                             </v-alert>
                                                             </v-col>
                                                         <v-col cols="12" md="6">

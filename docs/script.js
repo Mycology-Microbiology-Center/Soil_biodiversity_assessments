@@ -20,7 +20,7 @@ new Vue({
         
         // Sequencing parameters
         requiredReads: 10000,
-        poolingEffect: 0.5,
+        poolingFactor: 0.5,
         sequencingPlatform: 'PacBio Sequel II',
         platforms: ['Illumina MiSeq', 'Illumina NextSeq', 'Illumina NovaSeq', 'PacBio Sequel II', 'PacBio Revio', 'Oxford Nanopore', 'Element Biosciences AVITI', 'MGI DNBSEQ-G99', 'Other'],
         sequencingThroughput: 8000000,
@@ -48,7 +48,7 @@ new Vue({
     },
 
     computed: {
-        recommendedPoolingEffect() {
+        recommendedpoolingFactor() {
           if (!this.selectedObject) return 1;
           switch (this.selectedObject) {
             case 'Bacteria': return 0.25;
@@ -186,11 +186,11 @@ new Vue({
     methods: {
         onObjectChange() {     
             if (this.selectedObject === 'Bacteria') {
-            this.poolingEffect = 0.25;
+            this.poolingFactor = 0.25;
             } else if (this.selectedObject === 'Fungi') {
-            this.poolingEffect = 0.75;
+            this.poolingFactor = 0.75;
             } else if (this.selectedObject === 'Animal') {
-            this.poolingEffect = 1;
+            this.poolingFactor = 1;
             }
                 },
 
@@ -204,19 +204,19 @@ new Vue({
                 case 'DNA Pooling':
                     // DNA from all samples within each site is pooled
                     // Total reads = sites × (all samples per site × pooling effect × required reads per sample)
-                    return Math.ceil(this.numSites * (totalSamples * this.poolingEffect * this.requiredReads));
+                    return Math.ceil(this.numSites * (totalSamples * this.poolingFactor * this.requiredReads));
                     
                 case 'Soil pooling':
                     // Soil samples are pooled before DNA extraction within each site
                     // Total reads = sites × (all samples per site × pooling effect × required reads per sample)
-                    return Math.ceil(this.numSites * (totalSamples * this.poolingEffect * this.requiredReads));
+                    return Math.ceil(this.numSites * (totalSamples * this.poolingFactor * this.requiredReads));
                     
                 case 'Semi-pooling':
                     // Samples within each site are partitioned into semipools, each semipool processed separately
                     // Total reads = sites × semipools per site × (samples per semipool × pooling effect × required reads per sample)
                     // This simplifies to: sites × semipools × (numSamples/numSemipools × pooling effect × required reads)
                     // Which equals: sites × numSamples × pooling effect × required reads
-                    return Math.ceil(this.numSites * (this.numSamples * this.poolingEffect * this.requiredReads));
+                    return Math.ceil(this.numSites * (this.numSamples * this.poolingFactor * this.requiredReads));
                     
                 default:
                     return 0;
