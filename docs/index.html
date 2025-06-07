@@ -418,7 +418,7 @@
                                                                             mdi-information-outline
                                                                         </v-icon>
                                                                     </template>
-                                                                    <span>Required reads × pooling effect × samples per site: the effective number of reads allocated per pooled sample for DNA/soil pooling methods</span>
+                                                                    <span>Required reads × pooling factor × samples per site: the effective number of reads allocated per pooled sample for DNA/soil pooling methods</span>
                                                                 </v-tooltip>
                                                             </div>
                                                         </v-col>
@@ -447,7 +447,7 @@
                                                                             mdi-information-outline
                                                                         </v-icon>
                                                                     </template>
-                                                                    <span>Required reads × samples per site × pooling effect ÷ semipools: the effective number of reads allocated per semipool for semi-pooling method</span>
+                                                                    <span>Required reads × samples per site × pooling factor ÷ semipools: the effective number of reads allocated per semipool for semi-pooling method</span>
                                                                 </v-tooltip>
                                                             </div>
                                                         </v-col>
@@ -471,7 +471,7 @@
                                                             
                                                             <!-- ⚠️ Pooling effect warnings go here -->
                                                             <v-alert
-                                                            v-if="poolingFactor > recommendedpoolingFactor"
+                                                            v-if="poolingFactor > recommendedPoolingFactor"
                                                             type="warning"
                                                             dense
                                                             text
@@ -481,13 +481,13 @@
                                                             </v-alert>
 
                                                             <v-alert
-                                                            v-else-if="poolingFactor < recommendedpoolingFactor"
+                                                            v-else-if="poolingFactor < recommendedPoolingFactor"
                                                             type="warning"
                                                             dense
                                                             text
                                                             class="mt-2"
                                                             >
-                                                            Pooling factor is lower than recommended for {{ selectedObject }} (recommended: {{ recommendedpoolingFactor }})
+                                                            Pooling factor is lower than recommended for {{ selectedObject }} (recommended: {{ recommendedPoolingFactor }})
                                                             </v-alert>
                                                             </v-col>
                                                         <v-col cols="12" md="6">

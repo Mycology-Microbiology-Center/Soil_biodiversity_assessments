@@ -48,7 +48,7 @@ new Vue({
     },
 
     computed: {
-        recommendedpoolingFactor() {
+        recommendedPoolingFactor() {
           if (!this.selectedObject) return 1;
           switch (this.selectedObject) {
             case 'Bacteria': return 0.25;
@@ -202,20 +202,19 @@ new Vue({
                     return Math.ceil(totalSamples * this.requiredReads);
                     
                 case 'DNA Pooling':
-                    // DNA from all samples within each site is pooled
-                    // Total reads = sites × (all samples per site × pooling effect × required reads per sample)
-                    return Math.ceil(this.numSites * (totalSamples * this.poolingFactor * this.requiredReads));
+                    // DNA from all samples within each site is pooled into one pooled sample per site
+                    // Total reads = sites × (samples per site × pooling factor × required reads per sample)
+                    return Math.ceil(this.numSites * (this.numSamples * this.poolingFactor * this.requiredReads));
                     
                 case 'Soil pooling':
                     // Soil samples are pooled before DNA extraction within each site
-                    // Total reads = sites × (all samples per site × pooling effect × required reads per sample)
-                    return Math.ceil(this.numSites * (totalSamples * this.poolingFactor * this.requiredReads));
+                    // Total reads = sites × (samples per site × pooling factor × required reads per sample)
+                    return Math.ceil(this.numSites * (this.numSamples * this.poolingFactor * this.requiredReads));
                     
                 case 'Semi-pooling':
                     // Samples within each site are partitioned into semipools, each semipool processed separately
-                    // Total reads = sites × semipools per site × (samples per semipool × pooling effect × required reads per sample)
-                    // This simplifies to: sites × semipools × (numSamples/numSemipools × pooling effect × required reads)
-                    // Which equals: sites × numSamples × pooling effect × required reads
+                    // Total reads = sites × semipools per site × (samples per semipool × pooling factor × required reads per sample)
+                    // This simplifies to: sites × numSamples × pooling factor × required reads per sample
                     return Math.ceil(this.numSites * (this.numSamples * this.poolingFactor * this.requiredReads));
                     
                 default:
