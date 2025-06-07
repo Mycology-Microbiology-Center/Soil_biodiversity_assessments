@@ -203,19 +203,20 @@ new Vue({
                     
                 case 'DNA Pooling':
                     // DNA from all samples within each site is pooled
-                    // Total reads = sites × required reads per sample × pooling effect
-                    return Math.ceil(this.numSites * this.requiredReads * this.poolingEffect);
+                    // Total reads = sites × (all samples per site × pooling effect × required reads per sample)
+                    return Math.ceil(this.numSites * (totalSamples * this.poolingEffect * this.requiredReads));
                     
                 case 'Soil pooling':
                     // Soil samples are pooled before DNA extraction within each site
-                    // Total reads = sites × required reads per sample × pooling effect
-                    return Math.ceil(this.numSites * this.requiredReads * this.poolingEffect);
+                    // Total reads = sites × (all samples per site × pooling effect × required reads per sample)
+                    return Math.ceil(this.numSites * (totalSamples * this.poolingEffect * this.requiredReads));
                     
                 case 'Semi-pooling':
                     // Samples within each site are partitioned into semipools, each semipool processed separately
-                    // Total reads = sites × semipools per site × (required reads per sample × pooling effect / semipools per site)
-                    // This simplifies to: sites × required reads per sample × pooling effect
-                    return Math.ceil(this.numSites * this.requiredReads * this.poolingEffect);
+                    // Total reads = sites × semipools per site × (samples per semipool × pooling effect × required reads per sample)
+                    // This simplifies to: sites × semipools × (numSamples/numSemipools × pooling effect × required reads)
+                    // Which equals: sites × numSamples × pooling effect × required reads
+                    return Math.ceil(this.numSites * (this.numSamples * this.poolingEffect * this.requiredReads));
                     
                 default:
                     return 0;
