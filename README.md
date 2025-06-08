@@ -6,4 +6,7 @@ This repository contains the code and resources used for analyzing the impact of
 - `get the richness at different sequencing depths.R`: Script to estimate diversity at various sequencing depths.
 - `effective number of designs.R`: Script to estimate effective number at summary sequencing depth for unpooled sampling designs.
 - `visualization and significant test.R`: Generates figures used in the manuscript (e.g., accumulation curve).
-
+# Calcuator link
+https://mycology-microbiology-center.github.io/Soil_biodiversity_assessments/
+# Citation
+Chen, M., Dulya, O., Mikryukov, V., Copot, O., Metsoja, M., & Tedersoo, L. (under review). Sampling design and sample processing affect soil biodiversity assessments.
