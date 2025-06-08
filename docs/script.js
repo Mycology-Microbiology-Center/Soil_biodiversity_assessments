@@ -20,6 +20,7 @@ new Vue({
         
         // Sequencing parameters
         requiredReads: 10000,
+        qualityControlLossRate: 20,
         poolingFactor: 0.5,
         sequencingPlatform: 'PacBio Sequel II',
         platforms: ['Illumina MiSeq', 'Illumina NextSeq', 'Illumina NovaSeq', 'PacBio Sequel II', 'PacBio Revio', 'Oxford Nanopore', 'Element Biosciences AVITI', 'MGI DNBSEQ-G99', 'Other'],
@@ -58,6 +59,11 @@ new Vue({
           }
         },
         
+        qualityLossRateDecimal() {
+          // Convert percentage to decimal (e.g., 50% -> 0.5)
+          return this.qualityControlLossRate / 100;
+        },
+        
         sequencingCapacity() {
           if (!this.sequencingThroughput || !this.requiredReads) {
             return {
@@ -69,9 +75,7 @@ new Vue({
           }
           
           // Calculate initial reads needed accounting for quality filtering losses
-          // Assuming ~50% of reads may be lost to quality filtering, chimeras, non-specific amplification
-          const qualityLossRate = 0.5; // 50% loss rate
-          const initialReadsNeeded = this.requiredReads / (1 - qualityLossRate);
+          const initialReadsNeeded = this.requiredReads / (1 - this.qualityLossRateDecimal);
           const maxSamples = Math.floor(this.sequencingThroughput / initialReadsNeeded);
           const currentSamples = this.numSites * this.numSamples;
           const remainingCapacity = Math.max(0, maxSamples - currentSamples);
@@ -91,6 +95,8 @@ new Vue({
                  this.numSamples >= 1 &&
                  this.numSemipools >= 1 &&
                  this.requiredReads > 0 &&
+                 this.qualityControlLossRate >= 0 &&
+                 this.qualityControlLossRate < 100 &&
                  this.sequencingThroughput > 0 &&
                  this.dnaExtractionCost >= 0 &&
                  this.pcrCost >= 0 &&
@@ -196,26 +202,29 @@ new Vue({
 
         // Total number of reads required
         calculateTotalReads(method, totalSamples) {
+            // Account for quality control losses by adjusting required reads
+            const adjustedReads = this.requiredReads + (this.requiredReads * this.qualityLossRateDecimal);
+            
             switch(method) {
                 case 'Unpooled':
                     // Each sample sequenced individually
-                    return Math.ceil(totalSamples * this.requiredReads);
+                    return Math.ceil(totalSamples * adjustedReads);
                     
                 case 'DNA Pooling':
                     // DNA from all samples within each site is pooled into one pooled sample per site
-                    // Total reads = sites × (samples per site × pooling factor × required reads per sample)
-                    return Math.ceil(this.numSites * (this.numSamples * this.poolingFactor * this.requiredReads));
+                    // Total reads = sites × (samples per site × pooling factor × adjusted reads per sample)
+                    return Math.ceil(this.numSites * (this.numSamples * this.poolingFactor * adjustedReads));
                     
                 case 'Soil pooling':
                     // Soil samples are pooled before DNA extraction within each site
-                    // Total reads = sites × (samples per site × pooling factor × required reads per sample)
-                    return Math.ceil(this.numSites * (this.numSamples * this.poolingFactor * this.requiredReads));
+                    // Total reads = sites × (samples per site × pooling factor × adjusted reads per sample)
+                    return Math.ceil(this.numSites * (this.numSamples * this.poolingFactor * adjustedReads));
                     
                 case 'Semi-pooling':
                     // Samples within each site are partitioned into semipools, each semipool processed separately
-                    // Total reads = sites × semipools per site × (samples per semipool × pooling factor × required reads per sample)
-                    // This simplifies to: sites × numSamples × pooling factor × required reads per sample
-                    return Math.ceil(this.numSites * (this.numSamples * this.poolingFactor * this.requiredReads));
+                    // Total reads = sites × semipools per site × (samples per semipool × pooling factor × adjusted reads per sample)
+                    // This simplifies to: sites × numSamples × pooling factor × adjusted reads per sample
+                    return Math.ceil(this.numSites * (this.numSamples * this.poolingFactor * adjustedReads));
                     
                 default:
                     return 0;

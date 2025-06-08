@@ -301,6 +301,43 @@
                                                                     <div class="text-caption grey--text mt-1">
                                                                         Typically 5,000-50,000 for amplicon sequencing
                                                                     </div>
+                                                                    
+                                                                    <!-- Quality Control Loss Rate -->
+                                                                    <div class="text-subtitle-2 mt-4 mb-2">Quality control loss rate (%)</div>
+                                                                    <v-row align="center" no-gutters>
+                                                                        <v-col cols="8">
+                                                                            <v-slider
+                                                                                v-model="qualityControlLossRate"
+                                                                                min="0"
+                                                                                max="80"
+                                                                                step="1"
+                                                                                thumb-label
+                                                                                :thumb-size="50"
+                                                                                track-color="grey lighten-2"
+                                                                                thumb-color="primary"
+                                                                                hide-details
+                                                                                class="align-center"
+                                                                            ></v-slider>
+                                                                        </v-col>
+                                                                        <v-col cols="4" class="pl-3">
+                                                                            <v-text-field
+                                                                                v-model.number="qualityControlLossRate"
+                                                                                type="number"
+                                                                                min="0"
+                                                                                max="80"
+                                                                                step="1"
+                                                                                suffix="%"
+                                                                                density="compact"
+                                                                                hide-details
+                                                                                outlined
+                                                                                class="mt-0 pt-0"
+                                                                                style="max-width: 120px;"
+                                                                            ></v-text-field>
+                                                                        </v-col>
+                                                                    </v-row>
+                                                                    <div class="text-caption grey--text mt-1">
+                                                                        Expected percentage of reads lost during quality filtering, chimera removal, denoising, etc.
+                                                                    </div>
                                                                 </v-card>
                                                                 <v-tooltip bottom>
                                                                     <template v-slot:activator="{ on, attrs }">
@@ -314,7 +351,7 @@
                                                                             mdi-information-outline
                                                                         </v-icon>
                                                                     </template>
-                                                                    <span>The target number of sequencing reads needed per individual sample for adequate coverage (typically 5,000-50,000 for amplicon sequencing)</span>
+                                                                    <span>The target number of sequencing reads needed per individual sample for adequate coverage (typically 5,000-50,000 for amplicon sequencing). The quality control loss rate accounts for reads lost during bioinformatic processing steps including quality filtering, chimera removal, non-target amplicon filtering, and denoising (typically 30-60% for metabarcoding studies).</span>
                                                                 </v-tooltip>
                                                             </div>
                                                             
