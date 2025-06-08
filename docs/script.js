@@ -67,26 +67,46 @@ new Vue({
         sequencingCapacity() {
           if (!this.sequencingThroughput || !this.requiredReads) {
             return {
-              maxSamples: 0,
-              currentSamples: 0,
-              remainingCapacity: 0,
-              utilizationPercent: 0
+              unpooled: { maxSamples: 0, currentSamples: 0, remainingCapacity: 0, utilizationPercent: 0 },
+              pooled: { maxSamples: 0, currentSamples: 0, remainingCapacity: 0, utilizationPercent: 0 },
+              semiPooled: { maxSamples: 0, currentSamples: 0, remainingCapacity: 0, utilizationPercent: 0 }
             };
           }
           
-          // Calculate initial reads needed accounting for quality filtering losses
-          const initialReadsNeeded = this.requiredReads / (1 - this.qualityLossRateDecimal);
-          const maxSamples = Math.floor(this.sequencingThroughput / initialReadsNeeded);
-          const currentSamples = this.numSites * this.numSamples;
-          const remainingCapacity = Math.max(0, maxSamples - currentSamples);
-          const utilizationPercent = currentSamples > 0 ? Math.round((currentSamples / maxSamples) * 100) : 0;
+          const adjustedReads = this.requiredReads + (this.requiredReads * this.qualityLossRateDecimal);
           
-          return {
-            maxSamples,
-            currentSamples,
-            remainingCapacity,
-            utilizationPercent
+          // Calculate capacity for each method
+          const methods = {
+            unpooled: {
+              sequencingUnits: this.numSites * this.numSamples,
+              readsPerUnit: adjustedReads
+            },
+            pooled: {
+              sequencingUnits: this.numSites,
+              readsPerUnit: this.numSamples * this.poolingFactor * adjustedReads
+            },
+            semiPooled: {
+              sequencingUnits: this.numSites * this.numSemipools,
+              readsPerUnit: this.numSemipools > 0 ? (this.numSamples / this.numSemipools) * this.poolingFactor * adjustedReads : 0
+            }
           };
+          
+          const result = {};
+          for (const [method, data] of Object.entries(methods)) {
+            const maxSamples = data.readsPerUnit > 0 ? Math.floor(this.sequencingThroughput / data.readsPerUnit) : 0;
+            const currentSamples = data.sequencingUnits;
+            const remainingCapacity = Math.max(0, maxSamples - currentSamples);
+            const utilizationPercent = maxSamples > 0 ? Math.round((currentSamples / maxSamples) * 100) : 0;
+            
+            result[method] = {
+              maxSamples,
+              currentSamples,
+              remainingCapacity,
+              utilizationPercent
+            };
+          }
+          
+          return result;
         },
         
         isValidConfiguration() {
