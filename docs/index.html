@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/vuetify@2.6.14/dist/vuetify.min.css" rel="stylesheet">
     <!-- Material Design Icons (required by Vuetify) -->
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
-    <!-- Your custom CSS -->
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
     <style>
         .message-text {
@@ -48,7 +48,7 @@
                                                     <v-select
                                                   v-model="selectedObject"
                                                   :items="['Bacteria', 'Fungi', 'Animal']"
-                                                  label="Select taxon"
+                                                  label="Taxonomic group of interest"
                                                   outlined
                                                   class="flex-grow-1"
                                                   @change="onObjectChange"
@@ -65,7 +65,7 @@
                                                                 mdi-information-outline
                                                             </v-icon>
                                                         </template>
-                                                        <span>Taxonomic group of the study objects (affects the pooling effect)</span>
+                                                        <span>Used when calculating the pooling effect—the impact of sample pooling on biodiversity estimates.</span>
                                                     </v-tooltip>
                                                 </div>
                                             </v-col>
@@ -73,7 +73,7 @@
                                                 <div class="d-flex align-center">
                                                     <v-text-field
                                                         v-model.number="numSites"
-                                                        label="Number of Sites"
+                                                        label="Number of sampling sites"
                                                         type="number"
                                                         outlined
                                                         min="1"
@@ -100,7 +100,7 @@
                                                 <div class="d-flex align-center">
                                                     <v-text-field
                                                         v-model.number="numSamples"
-                                                        label="Number of samples per site"
+                                                        label="Number of individual samples per site"
                                                         type="number"
                                                         outlined
                                                         min="1"
@@ -145,7 +145,7 @@
                                                                 mdi-information-outline
                                                             </v-icon>
                                                         </template>
-                                                        <span>For semi-pooling: the number of pools created by partitioning samples within each site</span>
+                                                        <span>Applies to the semi-pooling strategy, when individual samples are split across several pooled samples within a site, unlike full pooling, where a single pooled sample represents the entire site.</span>
                                                     </v-tooltip>
                                                 </div>
                                                 
@@ -175,7 +175,7 @@
                                                             <div class="d-flex align-center">
                                                                 <v-text-field
                                                                     v-model.number="dnaExtractionCost"
-                                                                    label="DNA extraction (per sample)"
+                                                                    label="DNA extraction costs (per sample)"
                                                                     type="number"
                                                                     outlined
                                                                     prepend-inner-icon="mdi-cash-multiple"
@@ -195,7 +195,7 @@
                                                                             mdi-information-outline
                                                                         </v-icon>
                                                                     </template>
-                                                                    <span>The cost per sample for DNA extraction, including reagents, consumables, and labor</span>
+                                                                    <span>The cost per sample for DNA extraction, including reagents, consumables, and labor.</span>
                                                                 </v-tooltip>
                                                             </div>
                                                         </v-col>
@@ -203,7 +203,7 @@
                                                             <div class="d-flex align-center">
                                                                 <v-text-field
                                                                     v-model.number="pcrCost"
-                                                                    label="PCR (per sample)"
+                                                                    label="Library prep & PCR costs (per sample)"
                                                                     type="number"
                                                                     outlined
                                                                     prepend-inner-icon="mdi-cash-multiple"
@@ -223,7 +223,7 @@
                                                                             mdi-information-outline
                                                                         </v-icon>
                                                                     </template>
-                                                                    <span>The cost per sample for PCR amplification, including primers, polymerase, and other reagents</span>
+                                                                    <span>Cost of PCR amplification, indexing/adapter ligation, clean-up, and QC needed to create a sequencing-ready library from one sample.</span>
                                                                 </v-tooltip>
                                                             </div>
                                                         </v-col>
@@ -231,7 +231,7 @@
                                                             <div class="d-flex align-center">
                                                                 <v-text-field
                                                                     v-model.number="librarySequencingCost"
-                                                                    label="Library preparation and sequencing (per run)"
+                                                                    label="Sequencing costs (per run)"
                                                                     type="number"
                                                                     outlined
                                                                     prepend-inner-icon="mdi-cash-multiple"
@@ -251,7 +251,7 @@
                                                                             mdi-information-outline
                                                                         </v-icon>
                                                                     </template>
-                                                                    <span>The total cost for library preparation and one sequencing run, including adapters, indices, and instrument time</span>
+                                                                    <span>Total reagent + flow-cell cost for a single sequencing run (e.g., one Illumina lane, PacBio SMRT Cell, or ONT flow cell), regardless of how many libraries are pooled.</span>
                                                                 </v-tooltip>
                                                             </div>
                                                         </v-col>
@@ -269,7 +269,7 @@
                                                         <v-col cols="12" md="6">
                                                             <div class="d-flex align-center">
                                                                 <v-card outlined class="pa-3 flex-grow-1">
-                                                                    <div class="text-subtitle-2 mb-2">Required number of reads (per sample)</div>
+                                                                    <div class="text-subtitle-2 mb-2">Required number of reads per individual sample</div>
                                                                     <v-row align="center" no-gutters>
                                                                         <v-col cols="8">
                                                                             <v-slider
@@ -305,7 +305,7 @@
                                                                     </div>
                                                                     
                                                                     <!-- Quality Control Loss Rate -->
-                                                                    <div class="text-subtitle-2 mt-4 mb-2">Quality control loss rate (%)</div>
+                                                                    <div class="text-subtitle-2 mt-4 mb-2">Read loss during quality control (%)</div>
                                                                     <v-row align="center" no-gutters>
                                                                         <v-col cols="8">
                                                                             <v-slider
@@ -338,7 +338,7 @@
                                                                         </v-col>
                                                                     </v-row>
                                                                     <div class="text-caption grey--text mt-1">
-                                                                        Expected percentage of reads lost during quality filtering, chimera removal, denoising, etc.
+                                                                        Expected percentage of reads lost during bioinformatic processing (typically 30-60% for metabarcoding)
                                                                     </div>
                                                                 </v-card>
                                                                 <v-tooltip bottom>
@@ -353,7 +353,7 @@
                                                                             mdi-information-outline
                                                                         </v-icon>
                                                                     </template>
-                                                                    <span>The target number of sequencing reads needed per individual sample for adequate coverage (typically 5,000-50,000 for amplicon sequencing). The quality control loss rate accounts for reads lost during bioinformatic processing steps including quality filtering, chimera removal, non-target amplicon filtering, and denoising (typically 30-60% for metabarcoding studies).</span>
+                                                                    <span>The target number of sequencing reads per individual sample needed for adequate coverage (applied to unpooled sampling). The quality control loss rate accounts for reads lost during bioinformatic processing steps including quality filtering, chimera removal, non-target amplicon filtering, and denoising.</span>
                                                                 </v-tooltip>
                                                             </div>
                                                             
@@ -452,7 +452,7 @@
                                                                         </v-col>
                                                                     </v-row>
                                                                                                                                                                                             <div class="text-caption grey--text mt-1">
-                                                                        Multiplier that adjusts sequencing depth based on target organism characteristics when samples are pooled
+                                                                        Pooling factor is ratio of the pooled sample’s read count to the total reads across the individual samples
                                                                     </div>
                                                     
                                                     <!-- Calculated read numbers -->
@@ -482,7 +482,7 @@
                                                                             mdi-information-outline
                                                                         </v-icon>
                                                                     </template>
-                                                                    <span>Required reads × pooling factor × samples per site: the effective number of reads allocated per pooled sample for DNA/soil pooling methods</span>
+                                                                    <span>Number of reads assigned to each pooled sample at the selected pooling factor.</span>
                                                                 </v-tooltip>
                                                             </div>
                                                         </v-col>
@@ -490,7 +490,7 @@
                                                             <div class="d-flex align-center">
                                                                 <v-text-field
                                                                     :value="numSemipools > 0 ? Math.round(requiredReads * numSamples * poolingFactor / numSemipools).toLocaleString() : '0'"
-                                                                    label="Reads per semipool"
+                                                                    label="Reads per each semipool"
                                                                     type="text"
                                                                     outlined
                                                                     readonly
@@ -511,7 +511,7 @@
                                                                             mdi-information-outline
                                                                         </v-icon>
                                                                     </template>
-                                                                    <span>Required reads × samples per site × pooling factor ÷ semipools: the effective number of reads allocated per semipool for semi-pooling method</span>
+                                                                    <span>Number of reads assigned to each semipool at the selected pooling factor.</span>
                                                                 </v-tooltip>
                                                             </div>
                                                         </v-col>
@@ -529,19 +529,19 @@
                                                                             mdi-information-outline
                                                                         </v-icon>
                                                                     </template>
-                                                                    <span>Coefficient that adjusts sequencing depth requirements based on the biological characteristics of the target organism when pooling samples</span>
+                                                                    <span>Ratio of sequencing reads given to one pooled sample versus the combined reads that would have been allocated to the individual samples it replaces. Example: 4 individual samples, with each getting 1000 reads, have 4000 reads in total for assessing biodiversity within a site. With a pooling factor of 0.5, the pooled sample has 2 000 reads, with a pooling factor of 5, it has 20 000 reads.</span>
                                                                 </v-tooltip>
                                                             </div>
                                                             
                                                             <!-- ⚠️ Pooling effect warnings go here -->
                                                             <v-alert
                                                             v-if="poolingFactor > recommendedPoolingFactor"
-                                                            type="warning"
+                                                            color="green"
                                                             dense
                                                             text
                                                             class="mt-2"
                                                             >
-                                                            Pooling factor is higher than recommended.
+                                                            Pooling effect is positive.
                                                             </v-alert>
 
                                                             <v-alert
@@ -551,7 +551,7 @@
                                                             text
                                                             class="mt-2"
                                                             >
-                                                            Pooling factor is lower than recommended for {{ selectedObject }} (recommended: {{ recommendedPoolingFactor }})
+                                                            Pooling effect is negative.
                                                             </v-alert>
                                                             </v-col>
                                                         <v-col cols="12" md="6">
