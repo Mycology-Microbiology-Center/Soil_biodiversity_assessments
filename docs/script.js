@@ -8,8 +8,8 @@ new Vue({
         // Experimental design data
         poolingMethod: ['Unpooled', 'DNA Pooling', 'Soil pooling', 'Semi-pooling'],
         numSites: 1,
-        numSamples: 10,
-        numSemipools: 9,
+        numSamples: 25,
+        numSemipools: 5,
         selectedObject: null,
 
         
