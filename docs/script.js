@@ -58,6 +58,28 @@ new Vue({
             default: return 1;
           }
         },
+
+        // TODO: Update this function when implementing independent pooling effect formulas for pooled samples
+        // This function will determine the pooling effect for the "Reads per pooled sample" calculation
+        pooledSamplePoolingEffect() {
+          // Currently using the same logic as the original pooling factor comparison
+          // Future implementation should use independent formula specific to pooled samples
+          return {
+            isPositive: this.poolingFactor > this.recommendedPoolingFactor,
+            isNegative: this.poolingFactor < this.recommendedPoolingFactor
+          };
+        },
+
+        // TODO: Update this function when implementing independent pooling effect formulas for semipools
+        // This function will determine the pooling effect for the "Reads per each semipool" calculation
+        semipoolPoolingEffect() {
+          // Currently using the same logic as the original pooling factor comparison
+          // Future implementation should use independent formula specific to semipools
+          return {
+            isPositive: this.poolingFactor > this.recommendedPoolingFactor,
+            isNegative: this.poolingFactor < this.recommendedPoolingFactor
+          };
+        },
         
         qualityLossRateDecimal() {
           // Convert percentage to decimal (e.g., 50% -> 0.5)

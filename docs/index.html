@@ -34,7 +34,7 @@
             </v-container>
 
             <v-main>
-                <v-container>
+                <v-container class="px-2">
                     <v-row>
                         <v-col cols="12" class="px-0">
                             <v-card>
@@ -522,6 +522,28 @@
                                                                     <span>Number of reads assigned to each pooled sample at the selected pooling factor.</span>
                                                                 </v-tooltip>
                                                             </div>
+                                                            
+                                                            <!-- TODO: Update alert conditions when implementing independent pooling effect formulas for pooled samples -->
+                                                            <!-- Pooling effect warning for pooled samples -->
+                                                            <v-alert
+                                                                v-if="pooledSamplePoolingEffect.isPositive"
+                                                                color="green"
+                                                                dense
+                                                                text
+                                                                class="mt-2"
+                                                            >
+                                                                Pooling effect is positive.
+                                                            </v-alert>
+
+                                                            <v-alert
+                                                                v-else-if="pooledSamplePoolingEffect.isNegative"
+                                                                type="warning"
+                                                                dense
+                                                                text
+                                                                class="mt-2"
+                                                            >
+                                                                Pooling effect is negative.
+                                                            </v-alert>
                                                         </v-col>
                                                         <v-col cols="6" class="pl-1">
                                                             <div class="d-flex align-center">
@@ -551,6 +573,28 @@
                                                                     <span>Number of reads assigned to each semipool at the selected pooling factor.</span>
                                                                 </v-tooltip>
                                                             </div>
+                                                            
+                                                            <!-- TODO: Update alert conditions when implementing independent pooling effect formulas for semipools -->
+                                                            <!-- Pooling effect warning for semipools -->
+                                                            <v-alert
+                                                                v-if="semipoolPoolingEffect.isPositive"
+                                                                color="green"
+                                                                dense
+                                                                text
+                                                                class="mt-2"
+                                                            >
+                                                                Pooling effect is positive.
+                                                            </v-alert>
+
+                                                            <v-alert
+                                                                v-else-if="semipoolPoolingEffect.isNegative"
+                                                                type="warning"
+                                                                dense
+                                                                text
+                                                                class="mt-2"
+                                                            >
+                                                                Pooling effect is negative.
+                                                            </v-alert>
                                                         </v-col>
                                                     </v-row>
                                                 </v-card>
@@ -569,27 +613,7 @@
                                                                     <span>Ratio of sequencing reads given to one pooled sample versus the combined reads that would have been allocated to the individual samples it replaces. Example: 4 individual samples, with each getting 1000 reads, have 4000 reads in total for assessing biodiversity within a site. With a pooling factor of 0.5, the pooled sample has 2 000 reads, with a pooling factor of 5, it has 20 000 reads.</span>
                                                                 </v-tooltip>
                                                             </div>
-                                                            
-                                                            <!-- ⚠️ Pooling effect warnings go here -->
-                                                            <v-alert
-                                                            v-if="poolingFactor > recommendedPoolingFactor"
-                                                            color="green"
-                                                            dense
-                                                            text
-                                                            class="mt-2"
-                                                            >
-                                                            Pooling effect is positive.
-                                                            </v-alert>
 
-                                                            <v-alert
-                                                            v-else-if="poolingFactor < recommendedPoolingFactor"
-                                                            type="warning"
-                                                            dense
-                                                            text
-                                                            class="mt-2"
-                                                            >
-                                                            Pooling effect is negative.
-                                                            </v-alert>
                                                             </v-col>
                                                         <v-col cols="12" md="6">
                                                             <div class="d-flex align-center">
