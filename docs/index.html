@@ -269,7 +269,24 @@
                                                         <v-col cols="12" md="6">
                                                             <div class="d-flex align-center">
                                                                 <v-card outlined class="pa-3 flex-grow-1">
-                                                                    <div class="text-subtitle-2 mb-2">Required number of reads per individual sample</div>
+                                                                    <div class="d-flex align-center">
+                                                                        <div class="text-subtitle-2 mb-2">Required number of reads per individual sample</div>
+                                                                        <v-tooltip bottom>
+                                                                            <template v-slot:activator="{ on, attrs }">
+                                                                                <v-icon
+                                                                                    color="grey"
+                                                                                    dark
+                                                                                    v-bind="attrs"
+                                                                                    v-on="on"
+                                                                                    class="ml-2"
+                                                                                    small
+                                                                                >
+                                                                                    mdi-information-outline
+                                                                                </v-icon>
+                                                                            </template>
+                                                                            <span>The target number of sequencing reads per individual sample needed for adequate coverage (applied to unpooled sampling).</span>
+                                                                        </v-tooltip>
+                                                                    </div>
                                                                     <v-row align="center" no-gutters>
                                                                         <v-col cols="8">
                                                                             <v-slider
@@ -305,7 +322,24 @@
                                                                     </div>
                                                                     
                                                                     <!-- Quality Control Loss Rate -->
-                                                                    <div class="text-subtitle-2 mt-4 mb-2">Read loss during quality control (%)</div>
+                                                                    <div class="d-flex align-center">
+                                                                        <div class="text-subtitle-2 mt-4 mb-2">Read loss during quality control (%)</div>
+                                                                        <v-tooltip bottom>
+                                                                            <template v-slot:activator="{ on, attrs }">
+                                                                                <v-icon
+                                                                                    color="grey"
+                                                                                    dark
+                                                                                    v-bind="attrs"
+                                                                                    v-on="on"
+                                                                                    class="ml-2"
+                                                                                    small
+                                                                                >
+                                                                                    mdi-information-outline
+                                                                                </v-icon>
+                                                                            </template>
+                                                                            <span>Accounts for reads lost during bioinformatic processing steps including quality filtering, chimera removal, non-target amplicon filtering, and denoising.</span>
+                                                                        </v-tooltip>
+                                                                    </div>
                                                                     <v-row align="center" no-gutters>
                                                                         <v-col cols="8">
                                                                             <v-slider
@@ -341,20 +375,6 @@
                                                                         Expected percentage of reads lost during bioinformatic processing (typically 30-60% for metabarcoding)
                                                                     </div>
                                                                 </v-card>
-                                                                <v-tooltip bottom>
-                                                                    <template v-slot:activator="{ on, attrs }">
-                                                                        <v-icon
-                                                                            color="grey"
-                                                                            dark
-                                                                            v-bind="attrs"
-                                                                            v-on="on"
-                                                                            class="ml-2"
-                                                                        >
-                                                                            mdi-information-outline
-                                                                        </v-icon>
-                                                                    </template>
-                                                                    <span>The target number of sequencing reads per individual sample needed for adequate coverage (applied to unpooled sampling). The quality control loss rate accounts for reads lost during bioinformatic processing steps including quality filtering, chimera removal, non-target amplicon filtering, and denoising.</span>
-                                                                </v-tooltip>
                                                             </div>
                                                             
                                                             <!-- Sequencing Capacity Information -->
@@ -420,7 +440,24 @@
                                                         <v-col cols="12" md="6">
                                                             <div class="d-flex align-center">
                                                                 <v-card outlined class="pa-3 flex-grow-1">
-                                                                    <div class="text-subtitle-2 mb-2">Pooling factor</div>
+                                                                    <div class="d-flex align-center">
+                                                                        <div class="text-subtitle-2 mb-2">Pooling factor</div>
+                                                                        <v-tooltip bottom>
+                                                                            <template v-slot:activator="{ on, attrs }">
+                                                                                <v-icon
+                                                                                    color="grey"
+                                                                                    dark
+                                                                                    v-bind="attrs"
+                                                                                    v-on="on"
+                                                                                    class="ml-2"
+                                                                                    small
+                                                                                >
+                                                                                    mdi-information-outline
+                                                                                </v-icon>
+                                                                            </template>
+                                                                            <span>Pooling effect describes the difference between pooled samples and individual samples in their ability to estimate within-site diversity. As shown by Chen et al., 2025, pooling effect varies across taxa of interest and depends on the number of reads allocated to the pooled sample compared to the total read counts of individual samples.</span>
+                                                                        </v-tooltip>
+                                                                    </div>
                                                                     <v-row align="center" no-gutters>
                                                                         <v-col cols="8">
                                                                             <v-slider
