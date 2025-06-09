@@ -59,6 +59,15 @@ new Vue({
           }
         },
 
+        recommendedpooledsamples() {
+          // Currently using the same logic as the original pooling factor comparison
+          // Future implementation should use independent formula specific to pooled samples
+          return {
+            isPositive: this.numSemipools <= 5,
+            isNegative: this.numSemipools > 5
+          };
+        },
+
         // TODO: Update this function when implementing independent pooling effect formulas for pooled samples
         // This function will determine the pooling effect for the "Reads per pooled sample" calculation
         pooledSamplePoolingEffect() {
@@ -189,6 +198,14 @@ new Vue({
               soilPooling: this.calculateSequencingRuns('Soil pooling', this.totalSamples),
               semiPooling: this.calculateSequencingRuns('Semi-pooling', this.totalSamples),
             },
+            sampleSize: {
+              metric: '    • Number of samples',
+              unpooled: this.calculatesamplesize('Unpooled', this.totalSamples),
+              dnaPooling: this.calculatesamplesize('DNA Pooling', this.totalSamples),
+              soilPooling: this.calculatesamplesize('Soil pooling', this.totalSamples),
+              semiPooling: this.calculatesamplesize('Semi-pooling', this.totalSamples),
+            },
+            
             total: {
               metric: 'Total cost:',
               unpooled: this.calculateTotalCost('Unpooled', this.totalSamples),
@@ -222,6 +239,7 @@ new Vue({
           return [
             results.totalReads,
             results.sequencingRuns,
+            results.sampleSize,
             results.total,
             results.costExtraction,
             results.costPCR,
@@ -279,6 +297,38 @@ new Vue({
             const runs = Math.ceil(totalReads / this.sequencingThroughput);
             return runs;
         },
+
+                // sample size for each sampling design
+                calculatesamplesize(method, totalSamples) {
+                  let dnaExtractionSamples;
+                  
+                  switch(method) {
+                      case 'Unpooled':
+                          // Extract DNA from each individual sample
+                          dnaExtractionSamples = totalSamples;
+                          break;
+                          
+                      case 'DNA Pooling':
+                          // Extract DNA from each individual sample (pooling happens after extraction)
+                          dnaExtractionSamples = this.numSites;
+                          break;
+                          
+                      case 'Soil pooling':
+                          // Pool soil samples before extraction, so only extract from pooled samples (one per site)
+                          dnaExtractionSamples = this.numSites;
+                          break;
+                          
+                      case 'Semi-pooling':
+                          // Samples are pooled into semipools before extraction (one extraction per semipool)
+                          dnaExtractionSamples = this.numSites * this.numSemipools;
+                          break;
+                          
+                      default:
+                          dnaExtractionSamples = 0;
+                  }
+                  
+                  return dnaExtractionSamples;
+              },
         
         // DNA extraction cost
         calculateDnaExtractionCost(method, totalSamples) {
