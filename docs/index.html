@@ -133,21 +133,7 @@
                                                         min="1"
                                                         class="flex-grow-1"
                                                     ></v-text-field>
-                                                    <v-tooltip bottom>
-                                                        <template v-slot:activator="{ on, attrs }">
-                                                            <v-icon
-                                                                color="grey"
-                                                                dark
-                                                                v-bind="attrs"
-                                                                v-on="on"
-                                                                class="ml-2"
-                                                            >
-                                                                mdi-information-outline
-                                                            </v-icon>
-                                                        </template>
-                                                        <span>Applies to the semi-pooling strategy, when individual samples are split across several pooled samples within a site, unlike full pooling, where a single pooled sample represents the entire site. According to Chen et al. (2025), the optimal number of individual samples to be pooled must not exceed 9.</span>
-                                                    </v-tooltip>
-                                                </div>
+                                                       </div>
                                                 
                                                 <!-- Semipool balance warning -->
                                                 <v-alert
@@ -162,6 +148,26 @@
                                                     </v-icon>
                                                     {{ semipoolBalance.message }}
                                                 </v-alert>
+                                                
+                                                <v-alert
+                                                v-if="recommendedpooledsamples.isPositive"
+                                                color="green"
+                                                dense
+                                                text
+                                                class="mt-2"
+                                            >
+                                                Pooling effect is positive for pooling samples.
+                                            </v-alert>
+
+                                            <v-alert
+                                                v-else-if="recommendedpooledsamples.isNegative"
+                                                type="warning"
+                                                dense
+                                                text
+                                                class="mt-2"
+                                            >
+                                                Pooling effect is negative for pooling samples.
+                                            </v-alert>
                                             </v-col>
 
                                             <!-- Costs Section -->
@@ -391,48 +397,48 @@
                                                                     <div class="mb-1">
                                                                         <strong>Sequencing units per run:</strong>
                                                                         <span :class="sequencingCapacity.unpooled.currentSamples > sequencingCapacity.unpooled.maxSamples ? 'orange--text' : ''">
-                                                                            {{ sequencingCapacity.unpooled.currentSamples.toLocaleString() }}
-                                                                        </span> / 
+                                                                            {{ sequencingCapacity.unpooled.currentSamples.toLocaleString() }} individual samples
+                                                                        </span> , or 
                                                                         <span :class="sequencingCapacity.pooled.currentSamples > sequencingCapacity.pooled.maxSamples ? 'orange--text' : ''">
-                                                                            {{ sequencingCapacity.pooled.currentSamples.toLocaleString() }}
-                                                                        </span> / 
+                                                                            {{ sequencingCapacity.pooled.currentSamples.toLocaleString() }} pooled samples
+                                                                        </span> , or 
                                                                         <span :class="sequencingCapacity.semiPooled.currentSamples > sequencingCapacity.semiPooled.maxSamples ? 'orange--text' : ''">
-                                                                            {{ sequencingCapacity.semiPooled.currentSamples.toLocaleString() }}
+                                                                            {{ sequencingCapacity.semiPooled.currentSamples.toLocaleString() }} semipools
                                                                         </span>
                                                                     </div>
                                                                     <div class="mb-1">
                                                                         <strong>Platform capacity:</strong>
-                                                                        {{ sequencingCapacity.unpooled.maxSamples.toLocaleString() }} / 
-                                                                        {{ sequencingCapacity.pooled.maxSamples.toLocaleString() }} / 
-                                                                        {{ sequencingCapacity.semiPooled.maxSamples.toLocaleString() }}
+                                                                        {{ sequencingCapacity.unpooled.maxSamples.toLocaleString() }} individual samples, or 
+                                                                        {{ sequencingCapacity.pooled.maxSamples.toLocaleString() }} pooled samples, or 
+                                                                        {{ sequencingCapacity.semiPooled.maxSamples.toLocaleString() }} semipools
                                                                     </div>
                                                                     <div class="mb-1">
                                                                         <strong>Remaining capacity:</strong>
                                                                         <span :class="sequencingCapacity.unpooled.remainingCapacity <= 0 ? 'orange--text' : 'green--text'">
-                                                                            {{ sequencingCapacity.unpooled.remainingCapacity.toLocaleString() }}
-                                                                        </span> / 
+                                                                            {{ sequencingCapacity.unpooled.remainingCapacity.toLocaleString() }} individual samples
+                                                                        </span> , or 
                                                                         <span :class="sequencingCapacity.pooled.remainingCapacity <= 0 ? 'orange--text' : 'green--text'">
-                                                                            {{ sequencingCapacity.pooled.remainingCapacity.toLocaleString() }}
-                                                                        </span> / 
+                                                                            {{ sequencingCapacity.pooled.remainingCapacity.toLocaleString() }} pooled samples
+                                                                        </span> , or 
                                                                         <span :class="sequencingCapacity.semiPooled.remainingCapacity <= 0 ? 'orange--text' : 'green--text'">
-                                                                            {{ sequencingCapacity.semiPooled.remainingCapacity.toLocaleString() }}
+                                                                            {{ sequencingCapacity.semiPooled.remainingCapacity.toLocaleString() }} semipools
                                                                         </span>
                                                                     </div>
                                                                     <div class="mb-2">
                                                                         <strong>Platform utilization:</strong>
                                                                         <span :class="sequencingCapacity.unpooled.utilizationPercent > 100 ? 'orange--text font-weight-bold' : ''">
-                                                                            {{ sequencingCapacity.unpooled.utilizationPercent }}%
-                                                                        </span> / 
+                                                                            {{ sequencingCapacity.unpooled.utilizationPercent }}% with individual samples
+                                                                        </span> , or 
                                                                         <span :class="sequencingCapacity.pooled.utilizationPercent > 100 ? 'orange--text font-weight-bold' : ''">
-                                                                            {{ sequencingCapacity.pooled.utilizationPercent }}%
-                                                                        </span> / 
+                                                                            {{ sequencingCapacity.pooled.utilizationPercent }}% with pooled samples
+                                                                        </span> ,  or 
                                                                         <span :class="sequencingCapacity.semiPooled.utilizationPercent > 100 ? 'orange--text font-weight-bold' : ''">
-                                                                            {{ sequencingCapacity.semiPooled.utilizationPercent }}%
+                                                                            {{ sequencingCapacity.semiPooled.utilizationPercent }}% with semipools
                                                                         </span>
                                                                     </div>
                                                                 </div>
                                                                 <div class="text-caption grey--text">
-                                                                    <strong>Values represent:</strong> Unpooled / DNA&Soil pooling / Semi-pooling methods<br>
+                                                                    <br>
                                                                     <strong>Orange values:</strong> Exceed platform capacity and require multiple runs
                                                                 </div>
                                                             </v-card>
