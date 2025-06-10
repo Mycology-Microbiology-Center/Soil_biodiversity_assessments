@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+f<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -134,7 +134,21 @@
                                                         class="flex-grow-1"
                                                     ></v-text-field>
                                                        </div>
-                                                <span>The number of samples pooled into each pool or the total number of pools each site when using semi-pooled approach</span>
+                                                      <v-tooltip bottom>
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <v-icon
+                                                                color="grey"
+                                                                dark
+                                                                v-bind="attrs"
+                                                                v-on="on"
+                                                                class="ml-2"
+                                                            >
+                                                                mdi-information-outline
+                                                            </v-icon>
+                                                        </template>
+                                                         <span>The number of samples pooled into each pool or the total number of pools each site when using semi-pooled approach</span>
+                                                    </v-tooltip>
+                                               
                                                 <!-- Semipool balance warning -->
                                                 <v-alert
                                                     v-if="numSemipools > 0 && numSamples > 0"
