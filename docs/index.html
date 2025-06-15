@@ -35,6 +35,22 @@
 
             <v-main>
                 <v-container class="px-2">
+                    <!-- App Title Section -->
+                    <v-row class="mb-4">
+                        <v-col cols="12" class="text-center">
+                            <h1 class="display-1 font-weight-light primary--text mb-2">
+                                DNA-metabarcoding sequencing calculator
+                            </h1>
+                            <p class="subtitle-1 grey--text mb-2">
+                                Optimize your experimental design and estimate costs for soil biodiversity assessments
+                            </p>
+                            <v-chip color="orange" text-color="white" small>
+                                <v-icon left small>mdi-flask-outline</v-icon>
+                                Beta Version
+                            </v-chip>
+                        </v-col>
+                    </v-row>
+                    
                     <v-row>
                         <v-col cols="12" class="px-0">
                             <v-card>
@@ -773,6 +789,25 @@
                             </v-card>
                         </div>
                     </v-form>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-container>
+                
+                <!-- Citation Section -->
+                <v-container class="px-2 py-6">
+                    <v-row>
+                        <v-col cols="12">
+                            <v-card outlined class="pa-4" color="grey lighten-4">
+                                <v-card-title class="text-h6 pb-2">
+                                    <v-icon class="mr-2" color="grey darken-1">mdi-book-open-variant</v-icon>
+                                    Citation
+                                </v-card-title>
+                                <v-card-text class="pt-0">
+                                    <p class="body-1 mb-0" style="font-style: italic;">
+                                        Chen M, Dulya O, Mikryukov V, Copot O, Metsoja M, Tedersoo L. (under review). Sampling design and sample processing affect soil biodiversity assessments.
+                                    </p>
                                 </v-card-text>
                             </v-card>
                         </v-col>

@@ -277,7 +277,7 @@ new Vue({
           
           const results = {
             totalReads: {
-              metric: 'Total number of reads required',
+              metric: 'Total number of raw reads required',
               unpooled: this.calculateTotalReads('Unpooled', this.totalSamples),
               dnaPooling: this.calculateTotalReads('DNA Pooling', this.totalSamples),
               soilPooling: this.calculateTotalReads('Soil pooling', this.totalSamples),
