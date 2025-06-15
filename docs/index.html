@@ -522,26 +522,49 @@ f<!DOCTYPE html>
                                                                 </v-tooltip>
                                                             </div>
                                                             
-                                                            <!-- TODO: Update alert conditions when implementing independent pooling effect formulas for pooled samples -->
                                                             <!-- Pooling effect warning for pooled samples -->
                                                             <v-alert
-                                                                v-if="pooledSamplePoolingEffect.isPositive"
+                                                                v-if="pooledSamplePoolingEffect.isNotSelected"
+                                                                color="grey lighten-2"
+                                                                dense
+                                                                text
+                                                                class="mt-2"
+                                                                icon=""
+                                                            >
+                                                                Please select taxonomic group.
+                                                            </v-alert>
+
+                                                            <v-alert
+                                                                v-else-if="pooledSamplePoolingEffect.isPositive"
                                                                 color="green"
                                                                 dense
                                                                 text
                                                                 class="mt-2"
+                                                                icon=""
                                                             >
                                                                 Pooling effect is positive.
                                                             </v-alert>
 
                                                             <v-alert
                                                                 v-else-if="pooledSamplePoolingEffect.isNegative"
-                                                                type="warning"
+                                                                color="orange lighten-2"
                                                                 dense
                                                                 text
                                                                 class="mt-2"
+                                                                icon=""
                                                             >
                                                                 Pooling effect is negative.
+                                                            </v-alert>
+
+                                                            <v-alert
+                                                                v-else-if="pooledSamplePoolingEffect.isUnknown"
+                                                                color="orange lighten-2"
+                                                                dense
+                                                                text
+                                                                class="mt-2"
+                                                                icon=""
+                                                            >
+                                                                Pooling effect is unknown (>100 samples per site).
                                                             </v-alert>
                                                         </v-col>
                                                         <v-col cols="6" class="pl-1">
@@ -573,26 +596,49 @@ f<!DOCTYPE html>
                                                                 </v-tooltip>
                                                             </div>
                                                             
-                                                            <!-- TODO: Update alert conditions when implementing independent pooling effect formulas for semipools -->
                                                             <!-- Pooling effect warning for semipools -->
                                                             <v-alert
-                                                                v-if="semipoolPoolingEffect.isPositive"
+                                                                v-if="semipoolPoolingEffect.isNotSelected"
+                                                                color="grey lighten-2"
+                                                                dense
+                                                                text
+                                                                class="mt-2"
+                                                                icon=""
+                                                            >
+                                                                Please select taxonomic group.
+                                                            </v-alert>
+
+                                                            <v-alert
+                                                                v-else-if="semipoolPoolingEffect.isPositive"
                                                                 color="green"
                                                                 dense
                                                                 text
                                                                 class="mt-2"
+                                                                icon=""
                                                             >
                                                                 Pooling effect is positive.
                                                             </v-alert>
 
                                                             <v-alert
                                                                 v-else-if="semipoolPoolingEffect.isNegative"
-                                                                type="warning"
+                                                                color="orange lighten-2"
                                                                 dense
                                                                 text
                                                                 class="mt-2"
+                                                                icon=""
                                                             >
                                                                 Pooling effect is negative.
+                                                            </v-alert>
+
+                                                            <v-alert
+                                                                v-else-if="semipoolPoolingEffect.isUnknown"
+                                                                color="orange lighten-2"
+                                                                dense
+                                                                text
+                                                                class="mt-2"
+                                                                icon=""
+                                                            >
+                                                                Pooling effect is unknown (>100 samples per site).
                                                             </v-alert>
                                                         </v-col>
                                                     </v-row>

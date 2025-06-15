@@ -59,37 +59,129 @@ new Vue({
           }
         },
 
-        recommendedpooledsamples() {
-          // Currently using the same logic as the original pooling factor comparison
-          // Future implementation should use independent formula specific to pooled samples
-          return {
-            isPositive: this.numSemipools <= 5,
-            isNegative: this.numSemipools > 5
-          };
-        },
-
-        // TODO: Update this function when implementing independent pooling effect formulas for pooled samples
-        // This function will determine the pooling effect for the "Reads per pooled sample" calculation
+        // This function determines the pooling effect for the "Reads per pooled sample" calculation
+        // Based on number of samples per site (N), pooling factor, and organism of interest
         pooledSamplePoolingEffect() {
-          // Currently using the same logic as the original pooling factor comparison
-          // Future implementation should use independent formula specific to pooled samples
-          return {
-            isPositive: this.poolingFactor > this.recommendedPoolingFactor,
-            isNegative: this.poolingFactor < this.recommendedPoolingFactor
-          };
-        },
 
-        // TODO: Update this function when implementing independent pooling effect formulas for semipools
-        // This function will determine the pooling effect for the "Reads per each semipool" calculation
+          // Number of pooled samples per site
+          const N = this.numSamples;
+          
+          // If N > 100, pooling effect is unknown (untested case)
+          if (N > 100) {
+            return { isUnknown: true };
+          }
+          
+          // Animals
+          if (this.selectedObject === "Animal") {
+            if (N <= 5 && this.poolingFactor > 1/N) {
+              return { isPositive: true };
+            }
+            if (N > 5 && N <= 20 && this.poolingFactor > 1) {
+              return { isPositive: true };
+            }
+            if (N > 20 && N <= 100 && this.poolingFactor > 5) {
+              return { isPositive: true };
+            }
+            return { isNegative: true };
+          }
+          
+          // Bacteria
+          if (this.selectedObject === "Bacteria") {
+            if (N <= 5 && this.poolingFactor > 1/N) {
+              return { isPositive: true };
+            }
+            if (N > 5 && N <= 100 && this.poolingFactor > this.recommendedPoolingFactor) {
+              return { isPositive: true };
+            }
+            return { isNegative: true };
+          }
+          
+          // Fungi
+          if (this.selectedObject === "Fungi") {
+            if (N <= 5 && this.poolingFactor > 1/N) {
+              return { isPositive: true };
+            }
+            if (N > 5 && N <= 20 && this.poolingFactor > this.recommendedPoolingFactor) {
+              return { isPositive: true };
+            }
+            if (N > 20 && N <= 100 && this.poolingFactor > 5) {
+              return { isPositive: true };
+            }
+            return { isNegative: true };
+          }
+          
+          // Default case if no selectedObject or unknown object
+          if (!this.selectedObject) {
+            return { isNotSelected: true };
+          }
+
+          // If the specified numeric conditions are not met, pooling effect is negative
+          return { isNegative: true };
+        },  // end of `pooledSamplePoolingEffect`
+
+        // This function determines the pooling effect for the "Reads per each semipool" calculation
+        // The logic is the same as in `pooledSamplePoolingEffect` 
+        // but with the N = Ns / Np  
+        // where Ns is the number of pooled samples per site, and Np is the number of semipools per site
         semipoolPoolingEffect() {
-          // Currently using the same logic as the original pooling factor comparison
-          // Future implementation should use independent formula specific to semipools
-          return {
-            isPositive: this.poolingFactor > this.recommendedPoolingFactor,
-            isNegative: this.poolingFactor < this.recommendedPoolingFactor
-          };
-        },
+
+          // N
+          const N = this.numSamples / this.numSemipools;
+          
+          // If N > 100, pooling effect is unknown (untested case)
+          if (N > 100) {
+            return { isUnknown: true };
+          }
+          
+          // Animals
+          if (this.selectedObject === "Animal") {
+            if (N <= 5 && this.poolingFactor > 1/N) {
+              return { isPositive: true };
+            }
+            if (N > 5 && N <= 20 && this.poolingFactor > 1) {
+              return { isPositive: true };
+            }
+            if (N > 20 && N <= 100 && this.poolingFactor > 5) {
+              return { isPositive: true };
+            }
+            return { isNegative: true };
+          }
+          
+          // Bacteria
+          if (this.selectedObject === "Bacteria") {
+            if (N <= 5 && this.poolingFactor > 1/N) {
+              return { isPositive: true };
+            }
+            if (N > 5 && N <= 100 && this.poolingFactor > this.recommendedPoolingFactor) {
+              return { isPositive: true };
+            }
+            return { isNegative: true };
+          }
+          
+          // Fungi
+          if (this.selectedObject === "Fungi") {
+            if (N <= 5 && this.poolingFactor > 1/N) {
+              return { isPositive: true };
+            }
+            if (N > 5 && N <= 20 && this.poolingFactor > this.recommendedPoolingFactor) {
+              return { isPositive: true };
+            }
+            if (N > 20 && N <= 100 && this.poolingFactor > 5) {
+              return { isPositive: true };
+            }
+            return { isNegative: true };
+          }
+          
+          // Default case if no selectedObject or unknown object
+          if (!this.selectedObject) {
+            return { isNotSelected: true };
+          }
+
+          // If the specified numeric conditions are not met, pooling effect is negative
+          return { isNegative: true };
+        },  // end of `semipoolPoolingEffect`
         
+
         qualityLossRateDecimal() {
           // Convert percentage to decimal (e.g., 50% -> 0.5)
           return this.qualityControlLossRate / 100;
