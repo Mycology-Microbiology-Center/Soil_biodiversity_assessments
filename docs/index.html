@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DNA sequencing calculator</title>
+    <title>DNA-metabarcoding sequencing calculator</title>
     <!-- Vue.js CDN -->
     <link href="https://cdn.jsdelivr.net/npm/vuetify@2.6.14/dist/vuetify.min.css" rel="stylesheet">
     <!-- Material Design Icons (required by Vuetify) -->
@@ -52,10 +52,14 @@
                     </v-row>
                     
                     <v-row>
-                        <v-col cols="12" class="px-0">
-                            <v-card>
-                                <v-card-title>Experimental design</v-card-title>
-                                <v-card-text>
+                        <v-col cols="12">
+                            <!-- Overall settings card (experimental design, costs, sequencing parameters) -->
+                            <v-card class="mb-4" elevation="2">
+                                <v-card-title class="primary white--text">
+                                    <v-icon class="mr-2" color="white">mdi-flask-outline</v-icon>
+                                    Experimental Design
+                                </v-card-title>
+                                <v-card-text class="pt-4">
                                     <v-form>
                                         <v-row>
                                             <!-- Experimental design -->
@@ -181,10 +185,11 @@
 
                                             <!-- Costs Section -->
                                             <v-col cols="12">
-                                                <v-card-title style="padding-left: 0px; color: black;" class="d-flex align-left pt-10">
-                                                    Costs
-                                                </v-card-title>
-                                                <v-card-text class="pa-0">
+                                                <v-divider class="my-6"></v-divider>
+                                                <div class="d-flex align-center mb-4">
+                                                    <v-icon class="mr-2" color="success">mdi-cash-multiple</v-icon>
+                                                    <h3 class="text-h5 success--text mb-0">Costs</h3>
+                                                </div>
                                                     <v-row>
                                                         <v-col cols="12" md="4">
                                                             <div class="d-flex align-center">
@@ -271,15 +276,15 @@
                                                             </div>
                                                         </v-col>
                                                     </v-row>
-                                                </v-card-text>
                                             </v-col>
 
                                             <!-- Sequencing Section -->
                                             <v-col cols="12">
-                                                <v-card-title style="padding-left: 0px; color: black;" class="d-flex align-left pt-10">
-                                                    Sequencing
-                                                </v-card-title>
-                                                <v-card-text class="pa-0">
+                                                <v-divider class="my-6"></v-divider>
+                                                <div class="d-flex align-center mb-4">
+                                                    <v-icon class="mr-2" color="info">mdi-dna</v-icon>
+                                                    <h3 class="text-h5 info--text mb-0">Sequencing Parameters</h3>
+                                                </div>
                                                     <v-row>
                                                         <v-col cols="12" md="6">
                                                             <div class="d-flex align-center">
@@ -769,26 +774,26 @@
                                                             </div>
                                                         </v-col>
                                                     </v-row>
-                                                </v-card-text>
                                             </v-col>
                                         </v-row>
-                                        
-                                                                <!-- Results Section -->
-                        <div v-if="isValidConfiguration" class="mt-4">
-                            <v-card-title style="padding-left: 0px; color: black;" class="d-flex align-left pt-6">
-                                Results
-                            </v-card-title>
-                            <v-card>
-                                <v-data-table
-                                    :headers="resultHeaders"
-                                    :items="calculatedResults"
-                                    hide-default-footer
-                                    disable-sort
-                                    class="results-table"
-                                ></v-data-table>
-                            </v-card>
-                        </div>
                     </v-form>
+                                </v-card-text>
+                            </v-card>
+                            
+                            <!-- Results Section -->
+                            <v-card v-if="isValidConfiguration" class="mt-4" elevation="2">
+                                <v-card-title class="warning white--text">
+                                    <v-icon class="mr-2" color="white">mdi-calculator</v-icon>
+                                    Results
+                                </v-card-title>
+                                <v-card-text class="pa-0">
+                                    <v-data-table
+                                        :headers="resultHeaders"
+                                        :items="calculatedResults"
+                                        hide-default-footer
+                                        disable-sort
+                                        class="results-table"
+                                    ></v-data-table>
                                 </v-card-text>
                             </v-card>
                         </v-col>
