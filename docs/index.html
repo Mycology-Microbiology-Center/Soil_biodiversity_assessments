@@ -387,48 +387,76 @@ f<!DOCTYPE html>
                                                                     📊 Sequencing capacity analysis
                                                                 </div>
                                                                 <div class="text-body-2">
-                                                                    <div class="mb-1">
-                                                                        <strong>Sequencing units per run:</strong>
-                                                                        <span :class="sequencingCapacity.unpooled.currentSamples > sequencingCapacity.unpooled.maxSamples ? 'orange--text' : ''">
-                                                                            {{ sequencingCapacity.unpooled.currentSamples.toLocaleString() }} individual samples
-                                                                        </span> , or 
-                                                                        <span :class="sequencingCapacity.pooled.currentSamples > sequencingCapacity.pooled.maxSamples ? 'orange--text' : ''">
-                                                                            {{ sequencingCapacity.pooled.currentSamples.toLocaleString() }} pooled samples
-                                                                        </span> , or 
-                                                                        <span :class="sequencingCapacity.semiPooled.currentSamples > sequencingCapacity.semiPooled.maxSamples ? 'orange--text' : ''">
-                                                                            {{ sequencingCapacity.semiPooled.currentSamples.toLocaleString() }} semipools
-                                                                        </span>
-                                                                    </div>
-                                                                    <div class="mb-1">
-                                                                        <strong>Platform capacity:</strong>
-                                                                        {{ sequencingCapacity.unpooled.maxSamples.toLocaleString() }} individual samples, or 
-                                                                        {{ sequencingCapacity.pooled.maxSamples.toLocaleString() }} pooled samples, or 
-                                                                        {{ sequencingCapacity.semiPooled.maxSamples.toLocaleString() }} semipools
-                                                                    </div>
-                                                                    <div class="mb-1">
-                                                                        <strong>Remaining capacity:</strong>
-                                                                        <span :class="sequencingCapacity.unpooled.remainingCapacity <= 0 ? 'orange--text' : 'green--text'">
-                                                                            {{ sequencingCapacity.unpooled.remainingCapacity.toLocaleString() }} individual samples
-                                                                        </span> , or 
-                                                                        <span :class="sequencingCapacity.pooled.remainingCapacity <= 0 ? 'orange--text' : 'green--text'">
-                                                                            {{ sequencingCapacity.pooled.remainingCapacity.toLocaleString() }} pooled samples
-                                                                        </span> , or 
-                                                                        <span :class="sequencingCapacity.semiPooled.remainingCapacity <= 0 ? 'orange--text' : 'green--text'">
-                                                                            {{ sequencingCapacity.semiPooled.remainingCapacity.toLocaleString() }} semipools
-                                                                        </span>
-                                                                    </div>
-                                                                    <div class="mb-2">
-                                                                        <strong>Platform utilization:</strong>
-                                                                        <span :class="sequencingCapacity.unpooled.utilizationPercent > 100 ? 'orange--text font-weight-bold' : ''">
-                                                                            {{ sequencingCapacity.unpooled.utilizationPercent }}% with individual samples
-                                                                        </span> , or 
-                                                                        <span :class="sequencingCapacity.pooled.utilizationPercent > 100 ? 'orange--text font-weight-bold' : ''">
-                                                                            {{ sequencingCapacity.pooled.utilizationPercent }}% with pooled samples
-                                                                        </span> ,  or 
-                                                                        <span :class="sequencingCapacity.semiPooled.utilizationPercent > 100 ? 'orange--text font-weight-bold' : ''">
-                                                                            {{ sequencingCapacity.semiPooled.utilizationPercent }}% with semipools
-                                                                        </span>
-                                                                    </div>
+                                                                    <v-row no-gutters class="mb-2">
+                                                                        <v-col cols="6" class="font-weight-medium"></v-col>
+                                                                        <v-col cols="2" class="text-center font-weight-medium">Individual</v-col>
+                                                                        <v-col cols="2" class="text-center font-weight-medium">Pooled</v-col>
+                                                                        <v-col cols="2" class="text-center font-weight-medium">Semipools</v-col>
+                                                                    </v-row>
+                                                                    
+                                                                    <v-row no-gutters class="mb-1">
+                                                                        <v-col cols="6" class="font-weight-medium">Sequencing units per run:</v-col>
+                                                                        <v-col cols="2" class="text-center">
+                                                                            <span :class="sequencingCapacity.unpooled.currentSamples > sequencingCapacity.unpooled.maxSamples ? 'orange--text font-weight-bold' : ''">
+                                                                                {{ sequencingCapacity.unpooled.currentSamples.toLocaleString() }}
+                                                                            </span>
+                                                                        </v-col>
+                                                                        <v-col cols="2" class="text-center">
+                                                                            <span :class="sequencingCapacity.pooled.currentSamples > sequencingCapacity.pooled.maxSamples ? 'orange--text font-weight-bold' : ''">
+                                                                                {{ sequencingCapacity.pooled.currentSamples.toLocaleString() }}
+                                                                            </span>
+                                                                        </v-col>
+                                                                        <v-col cols="2" class="text-center">
+                                                                            <span :class="sequencingCapacity.semiPooled.currentSamples > sequencingCapacity.semiPooled.maxSamples ? 'orange--text font-weight-bold' : ''">
+                                                                                {{ sequencingCapacity.semiPooled.currentSamples.toLocaleString() }}
+                                                                            </span>
+                                                                        </v-col>
+                                                                    </v-row>
+                                                                    
+                                                                    <v-row no-gutters class="mb-1">
+                                                                        <v-col cols="6" class="font-weight-medium">Max platform capacity:</v-col>
+                                                                        <v-col cols="2" class="text-center">{{ sequencingCapacity.unpooled.maxSamples.toLocaleString() }}</v-col>
+                                                                        <v-col cols="2" class="text-center">{{ sequencingCapacity.pooled.maxSamples.toLocaleString() }}</v-col>
+                                                                        <v-col cols="2" class="text-center">{{ sequencingCapacity.semiPooled.maxSamples.toLocaleString() }}</v-col>
+                                                                    </v-row>
+                                                                    
+                                                                    <v-row no-gutters class="mb-1">
+                                                                        <v-col cols="6" class="font-weight-medium">Remaining capacity:</v-col>
+                                                                        <v-col cols="2" class="text-center">
+                                                                            <span :class="sequencingCapacity.unpooled.remainingCapacity <= 0 ? 'orange--text font-weight-bold' : 'green--text'">
+                                                                                {{ sequencingCapacity.unpooled.remainingCapacity.toLocaleString() }}
+                                                                            </span>
+                                                                        </v-col>
+                                                                        <v-col cols="2" class="text-center">
+                                                                            <span :class="sequencingCapacity.pooled.remainingCapacity <= 0 ? 'orange--text font-weight-bold' : 'green--text'">
+                                                                                {{ sequencingCapacity.pooled.remainingCapacity.toLocaleString() }}
+                                                                            </span>
+                                                                        </v-col>
+                                                                        <v-col cols="2" class="text-center">
+                                                                            <span :class="sequencingCapacity.semiPooled.remainingCapacity <= 0 ? 'orange--text font-weight-bold' : 'green--text'">
+                                                                                {{ sequencingCapacity.semiPooled.remainingCapacity.toLocaleString() }}
+                                                                            </span>
+                                                                        </v-col>
+                                                                    </v-row>
+                                                                    
+                                                                    <v-row no-gutters class="mb-2">
+                                                                        <v-col cols="6" class="font-weight-medium">Platform utilization:</v-col>
+                                                                        <v-col cols="2" class="text-center">
+                                                                            <span :class="sequencingCapacity.unpooled.utilizationPercent > 100 ? 'orange--text font-weight-bold' : ''">
+                                                                                {{ sequencingCapacity.unpooled.utilizationPercent }}%
+                                                                            </span>
+                                                                        </v-col>
+                                                                        <v-col cols="2" class="text-center">
+                                                                            <span :class="sequencingCapacity.pooled.utilizationPercent > 100 ? 'orange--text font-weight-bold' : ''">
+                                                                                {{ sequencingCapacity.pooled.utilizationPercent }}%
+                                                                            </span>
+                                                                        </v-col>
+                                                                        <v-col cols="2" class="text-center">
+                                                                            <span :class="sequencingCapacity.semiPooled.utilizationPercent > 100 ? 'orange--text font-weight-bold' : ''">
+                                                                                {{ sequencingCapacity.semiPooled.utilizationPercent }}%
+                                                                            </span>
+                                                                        </v-col>
+                                                                    </v-row>
                                                                 </div>
                                                                 <div class="text-caption grey--text">
                                                                     <br>
