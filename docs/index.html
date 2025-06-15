@@ -148,37 +148,19 @@ f<!DOCTYPE html>
                                                         <span>The number of samples pooled into each pool or the total number of pools each site when using semi-pooled approach</span>
                                                     </v-tooltip>
                                                 </div>
-                                               
+                                                
                                                 <!-- Semipool balance warning -->
                                                 <v-alert
                                                     v-if="numSemipools > 0 && numSamples > 0"
                                                     :type="semipoolBalance.isBalanced ? 'info' : 'warning'"
                                                     dense
                                                     text
-                                                    class="mt-2"
+                                                    class="mt-1"
                                                 >
                                                 {{ semipoolBalance.message }}
                                                 </v-alert>
-                                                
-                                                <v-alert
-                                                v-if="recommendedpooledsamples.isPositive"
-                                                color="green"
-                                                dense
-                                                text
-                                                class="mt-2"
-                                            >
-                                                Pooling effect is positive for pooling samples.
-                                            </v-alert>
 
-                                            <v-alert
-                                                v-else-if="recommendedpooledsamples.isNegative"
-                                                type="warning"
-                                                dense
-                                                text
-                                                class="mt-2"
-                                            >
-                                                Pooling effect is negative for pooling samples.
-                                            </v-alert>
+
                                             </v-col>
 
                                             <!-- Costs Section -->
@@ -506,7 +488,7 @@ f<!DOCTYPE html>
                                                                         </v-col>
                                                                     </v-row>
                                                                                                                                                                                             <div class="text-caption grey--text mt-1">
-                                                                        Pooling factor is ratio of the pooled sample’s read count to the total reads across the individual samples
+                                                                        Pooling factor is ratio of the pooled sample's read count to the total reads across the individual samples
                                                                     </div>
                                                     
                                                     <!-- Calculated read numbers -->
