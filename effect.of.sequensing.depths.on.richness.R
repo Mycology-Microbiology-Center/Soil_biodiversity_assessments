@@ -1,19 +1,25 @@
 #Richness
+library(marginaleffects)
+library(lme4)
+library(lmerTest)
+library(ggplot2)
+library(rcompanion)
+library(dplyr)
+library(MuMIn)
+library("parameters")
 #bacteria
 library(scales)
 library(effectsize)
-bacteria.normal.m <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods/bacteria.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
+bacteria.normal.m <- read.csv("bacteria.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
 bacteria.normal.m$method<-gsub("40A","_40A",bacteria.normal.m$method)
 bacteria.normal.m$method<-gsub("40B","_40B",bacteria.normal.m$method)
 bacteria.normal.m$method[bacteria.normal.m$method=="GSMc"]<-"GSMc_62"
 ##bacteria soil
-soil.metadata <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
+soil.metadata <- read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 bacteria.soil.m<-read.csv("bacteria.pooled.richness.csv",header = TRUE,row.names = 1,sep = ",")
 bacteria.soil.m<-bacteria.soil.m[grepl("soil",row.names(bacteria.soil.m)),]
 row.names(bacteria.soil.m)<-gsub("soil","",row.names(bacteria.soil.m))
 bacteria.soil.m$site<-row.names(bacteria.soil.m)
-
 bacteria.soil.m<-merge(bacteria.soil.m,soil.metadata,by="site",all=T)
 bacteria.soil.m$site2<-substr(bacteria.soil.m$site,1,2)
 bacteria.soil.m$estimate<-round(bacteria.soil.m$estimate)
@@ -58,13 +64,12 @@ bacteria.soil$pooling.effect<-(round(bacteria.soil$estimate))/round(bacteria.soi
 bacteria.soilLZ<-bacteria.soil
 bacteria.all<-rbind(bacteria.soilLZ,bacteria.soilLV,bacteria.soilLW)
 ##bacteria DNA
-bacteria.normal.m <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods/bacteria.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
+bacteria.normal.m <- read.csv("bacteria.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
 bacteria.normal.m$method<-gsub("40A","_40A",bacteria.normal.m$method)
 bacteria.normal.m$method<-gsub("40B","_40B",bacteria.normal.m$method)
 bacteria.normal.m$method[bacteria.normal.m$method=="GSMc"]<-"GSMc_62"
 ##bacteria DNA
-DNA.metadata <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
+DNA.metadata <- read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 bacteria.DNA.m<-read.csv("bacteria.pooled.richness.csv",header = TRUE,row.names = 1,sep = ",")
 bacteria.DNA.m<-bacteria.DNA.m[grepl("DNA",row.names(bacteria.DNA.m)),]
 row.names(bacteria.DNA.m)<-gsub("DNA","",row.names(bacteria.DNA.m))
@@ -119,7 +124,6 @@ bacteria.all2$pooling<-"DNA"
 all<-rbind(bacteria.all,bacteria.all2)
 all<-all[,c(1,4,5:7)]
 all2<-aggregate(all[,4],by=list(method=all$method,site2=all$site2,pooling=all$pooling),mean)
-library(ggplot2)
 out<-ggplot(all2, aes(x = method, y = x,fill=pooling)) +
   geom_bar(stat = "identity",position = 'dodge') +
   facet_wrap(~site2)+
@@ -141,18 +145,16 @@ bacteria.pool.ratio$community<-"bacteria"
 ###
 #bacteria
 #divide each method
-bacteria.normal.m <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods/bacteria.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
+bacteria.normal.m <- read.csv("bacteria.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
 bacteria.normal.m$method<-gsub("40A","_40A",bacteria.normal.m$method)
 bacteria.normal.m$method<-gsub("40B","_40B",bacteria.normal.m$method)
 bacteria.normal.m$method[bacteria.normal.m$method=="GSMc"]<-"GSMc_62"
 ##bacteria soil
-soil.metadata <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
+soil.metadata <- read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 bacteria.soil.m<-read.csv("bacteria.richness.csv",header = TRUE,row.names = 1,sep = ",")
 bacteria.soil.m<-bacteria.soil.m[grepl("soil",row.names(bacteria.soil.m)),]
 row.names(bacteria.soil.m)<-gsub("soil","",row.names(bacteria.soil.m))
 bacteria.soil.m$site<-row.names(bacteria.soil.m)
-
 bacteria.soil.m<-merge(bacteria.soil.m,soil.metadata,by="site",all=T)
 bacteria.soil.m$site2<-substr(bacteria.soil.m$site,1,2)
 bacteria.soil.m$estimate<-round(bacteria.soil.m$estimate)
@@ -197,18 +199,16 @@ bacteria.soil$pooling.effect<-(round(bacteria.soil$estimate))/round(bacteria.soi
 bacteria.soilLZ<-bacteria.soil
 bacteria.all<-rbind(bacteria.soilLZ,bacteria.soilLV,bacteria.soilLW)
 ##bacteria DNA
-bacteria.normal.m <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods/bacteria.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
+bacteria.normal.m <- read.csv("bacteria.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
 bacteria.normal.m$method<-gsub("40A","_40A",bacteria.normal.m$method)
 bacteria.normal.m$method<-gsub("40B","_40B",bacteria.normal.m$method)
 bacteria.normal.m$method[bacteria.normal.m$method=="GSMc"]<-"GSMc_62"
 ##bacteria DNA
-DNA.metadata <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
+DNA.metadata <- read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 bacteria.DNA.m<-read.csv("bacteria.richness.csv",header = TRUE,row.names = 1,sep = ",")
 bacteria.DNA.m<-bacteria.DNA.m[grepl("DNA",row.names(bacteria.DNA.m)),]
 row.names(bacteria.DNA.m)<-gsub("DNA","",row.names(bacteria.DNA.m))
 bacteria.DNA.m$site<-row.names(bacteria.DNA.m)
-
 bacteria.DNA.m<-merge(bacteria.DNA.m,DNA.metadata,by="site",all=T)
 bacteria.DNA.m$site2<-substr(bacteria.DNA.m$site,1,2)
 bacteria.DNA.m$estimate<-round(bacteria.DNA.m$estimate)
@@ -259,12 +259,10 @@ all<-rbind(bacteria.all,bacteria.all2)
 all<-all[,c(1,4,5:7)]
 all2<-aggregate(all[,4],by=list(method=all$method,site2=all$site2,pooling=all$pooling),mean)
 bacteria.normal.ratio<-all2
-
 bacteria.normal.ratio$type<-"low"
 bacteria.normal.ratio$community<-"bacteria"
 bacteria.pool.ratio$type<-"high"
 ##
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/14.sequencing depth/correct1")
 bacteria.summary.m<-read.csv("proportion.bacteria.richness.summarydepthforpooled.csv",header = TRUE,row.names = 1,sep = ",")
 infor<-bacteria.summary.m[,c(1,8,11)]
 infor$mer<-paste0(infor$site,infor$method)
@@ -276,7 +274,6 @@ bacteria.normal.ratio$proportion<-percent(bacteria.normal.ratio$pooled.seqs/bact
 bacteria.pool.ratio$mer<-paste0(bacteria.pool.ratio$site2,bacteria.pool.ratio$method)
 bacteria.pool.ratio<-merge(infor[,c(2,4)],bacteria.pool.ratio,by="mer")
 bacteria.pool.ratio$pooled.seqs<-39290
-library(scales)
 bacteria.pool.ratio$proportion<-percent(bacteria.pool.ratio$pooled.seqs/bacteria.pool.ratio$unpooledn_seqs)
 ##
 bacteria.summary.m<-bacteria.summary.m[c(1,4,6,8:11)]
@@ -293,13 +290,12 @@ bacteria$community<-"bacteria"
 
 #animal
 #divide each method
-animal.normal.m <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods/animal.totalrichness.csv",header = TRUE,sep = ",")
+animal.normal.m <- read.csv("animal.totalrichness.csv",header = TRUE,sep = ",")
 animal.normal.m$method<-gsub("40A","_40A",animal.normal.m$method)
 animal.normal.m$method<-gsub("40B","_40B",animal.normal.m$method)
 animal.normal.m$method[animal.normal.m$method=="GSMc"]<-"GSMc_62"
 ##animal soil
-soil.metadata <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
+soil.metadata <- read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 animal.soil.m<-read.csv("animal.pooled.richness.csv",header = TRUE,row.names = 1,sep = ",")
 animal.soil.m<-animal.soil.m[grepl("soil",row.names(animal.soil.m)),]
 row.names(animal.soil.m)<-gsub("soil","",row.names(animal.soil.m))
@@ -349,13 +345,12 @@ animal.soil$pooling.effect<-(round(animal.soil$estimate))/round(animal.soil$norm
 animal.soilLZ<-animal.soil
 animal.all<-rbind(animal.soilLZ,animal.soilLV,animal.soilLW)
 ##animal DNA
-animal.normal.m <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods/animal.totalrichness.csv",header = TRUE,sep = ",")
+animal.normal.m <- read.csv("animal.totalrichness.csv",header = TRUE,sep = ",")
 animal.normal.m$method<-gsub("40A","_40A",animal.normal.m$method)
 animal.normal.m$method<-gsub("40B","_40B",animal.normal.m$method)
 animal.normal.m$method[animal.normal.m$method=="GSMc"]<-"GSMc_62"
 ##animal DNA
-DNA.metadata <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
+DNA.metadata <- read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 animal.DNA.m<-read.csv("animal.pooled.richness.csv",header = TRUE,row.names = 1,sep = ",")
 animal.DNA.m<-animal.DNA.m[grepl("DNA",row.names(animal.DNA.m)),]
 row.names(animal.DNA.m)<-gsub("DNA","",row.names(animal.DNA.m))
@@ -413,16 +408,14 @@ all2<-aggregate(all[,4],by=list(method=all$method,site2=all$site2,pooling=all$po
 animal.pool.ratio<-all2
 animal.pool.ratio$community<-"animal"
 animal.pool.ratio$type<-"high"
-
 ##low sequencing
 #divide each method
-animal.normal.m <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods/animal.totalrichness.csv",header = TRUE,sep = ",")
+animal.normal.m <- read.csv("animal.totalrichness.csv",header = TRUE,sep = ",")
 animal.normal.m$method<-gsub("40A","_40A",animal.normal.m$method)
 animal.normal.m$method<-gsub("40B","_40B",animal.normal.m$method)
 animal.normal.m$method[animal.normal.m$method=="GSMc"]<-"GSMc_62"
 ##animal soil
-soil.metadata <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
+soil.metadata <- read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 animal.soil.m<-read.csv("animal.richness.csv",header = TRUE,row.names = 1,sep = ",")
 animal.soil.m<-animal.soil.m[grepl("soil",row.names(animal.soil.m)),]
 row.names(animal.soil.m)<-gsub("soil","",row.names(animal.soil.m))
@@ -472,13 +465,12 @@ animal.soil$pooling.effect<-(round(animal.soil$estimate))/round(animal.soil$norm
 animal.soilLZ<-animal.soil
 animal.all<-rbind(animal.soilLZ,animal.soilLV,animal.soilLW)
 ##animal DNA
-animal.normal.m <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods/animal.totalrichness.csv",header = TRUE,sep = ",")
+animal.normal.m <- read.csv("animal.totalrichness.csv",header = TRUE,sep = ",")
 animal.normal.m$method<-gsub("40A","_40A",animal.normal.m$method)
 animal.normal.m$method<-gsub("40B","_40B",animal.normal.m$method)
 animal.normal.m$method[animal.normal.m$method=="GSMc"]<-"GSMc_62"
 ##animal DNA
-DNA.metadata <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
+DNA.metadata <- read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 animal.DNA.m<-read.csv("animal.richness.csv",header = TRUE,row.names = 1,sep = ",")
 animal.DNA.m<-animal.DNA.m[grepl("DNA",row.names(animal.DNA.m)),]
 row.names(animal.DNA.m)<-gsub("DNA","",row.names(animal.DNA.m))
@@ -538,7 +530,6 @@ animal.normal.ratio$community<-"animal"
 animal.normal.ratio$type<-"low"
 animal.pool.ratio$type<-"high"
 #summary
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/14.sequencing depth/correct1")
 animal.summary.m<-read.csv("proportion.animal.richness.summarydepthforpooled.csv",header = TRUE,row.names = 1,sep = ",")
 infor<-animal.summary.m[,c(1,8,11)]
 infor$mer<-paste0(infor$site,infor$method)
@@ -566,13 +557,12 @@ animal$community<-"animal"
 
 #fungi
 #divide each method
-fungi.normal.m <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods/fungi.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
+fungi.normal.m <- read.csv("fungi.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
 fungi.normal.m$method<-gsub("40A","_40A",fungi.normal.m$method)
 fungi.normal.m$method<-gsub("40B","_40B",fungi.normal.m$method)
 fungi.normal.m$method[fungi.normal.m$method=="GSMc"]<-"GSMc_62"
 ##fungi soil
-soil.metadata <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
+soil.metadata <- read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 fungi.soil.m<-read.csv("fungi.pooled.richness.csv",header = TRUE,row.names = 1,sep = ",")
 fungi.soil.m<-fungi.soil.m[grepl("soil",row.names(fungi.soil.m)),]
 row.names(fungi.soil.m)<-gsub("soil","",row.names(fungi.soil.m))
@@ -622,13 +612,12 @@ fungi.soil$pooling.effect<-(round(fungi.soil$estimate))/round(fungi.soil$normale
 fungi.soilLZ<-fungi.soil
 fungi.all<-rbind(fungi.soilLZ,fungi.soilLV,fungi.soilLW)
 ##fungi DNA
-fungi.normal.m <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods/fungi.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
+fungi.normal.m <- read.csv("fungi.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
 fungi.normal.m$method<-gsub("40A","_40A",fungi.normal.m$method)
 fungi.normal.m$method<-gsub("40B","_40B",fungi.normal.m$method)
 fungi.normal.m$method[fungi.normal.m$method=="GSMc"]<-"GSMc_62"
 ##fungi DNA
-DNA.metadata <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
+DNA.metadata <- read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 fungi.DNA.m<-read.csv("fungi.pooled.richness.csv",header = TRUE,row.names = 1,sep = ",")
 fungi.DNA.m<-fungi.DNA.m[grepl("DNA",row.names(fungi.DNA.m)),]
 row.names(fungi.DNA.m)<-gsub("DNA","",row.names(fungi.DNA.m))
@@ -688,13 +677,12 @@ fungi.pool.ratio$community<-"fungi"
 fungi.pool.ratio$type<-"high"
 ##low.sequencing
 #divide each method
-fungi.normal.m <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods/fungi.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
+fungi.normal.m <- read.csv("fungi.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
 fungi.normal.m$method<-gsub("40A","_40A",fungi.normal.m$method)
 fungi.normal.m$method<-gsub("40B","_40B",fungi.normal.m$method)
 fungi.normal.m$method[fungi.normal.m$method=="GSMc"]<-"GSMc_62"
 ##fungi soil
-soil.metadata <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
+soil.metadata <- read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 fungi.soil.m<-read.csv("fungi.richness.csv",header = TRUE,row.names = 1,sep = ",")
 fungi.soil.m<-fungi.soil.m[grepl("soil",row.names(fungi.soil.m)),]
 row.names(fungi.soil.m)<-gsub("soil","",row.names(fungi.soil.m))
@@ -744,13 +732,12 @@ fungi.soil$pooling.effect<-(round(fungi.soil$estimate))/round(fungi.soil$normale
 fungi.soilLZ<-fungi.soil
 fungi.all<-rbind(fungi.soilLZ,fungi.soilLV,fungi.soilLW)
 ##fungi DNA
-fungi.normal.m <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods/fungi.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
+fungi.normal.m <- read.csv("fungi.totalrichness.csv",header = TRUE,sep = ",",row.names = 1)
 fungi.normal.m$method<-gsub("40A","_40A",fungi.normal.m$method)
 fungi.normal.m$method<-gsub("40B","_40B",fungi.normal.m$method)
 fungi.normal.m$method[fungi.normal.m$method=="GSMc"]<-"GSMc_62"
 ##fungi DNA
-DNA.metadata <- read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
+DNA.metadata <- read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 fungi.DNA.m<-read.csv("fungi.richness.csv",header = TRUE,row.names = 1,sep = ",")
 fungi.DNA.m<-fungi.DNA.m[grepl("DNA",row.names(fungi.DNA.m)),]
 row.names(fungi.DNA.m)<-gsub("DNA","",row.names(fungi.DNA.m))
@@ -810,7 +797,6 @@ fungi.normal.ratio$community<-"fungi"
 fungi.normal.ratio$type<-"low"
 fungi.pool.ratio$type<-"high"
 #summary
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/14.sequencing depth/correct1")
 fungi.summary.m<-read.csv("proportion.fungi.richness.summarydepthforpooled.csv",header = TRUE,row.names = 1,sep = ",")
 infor<-fungi.summary.m[,c(1,8,11)]
 infor$mer<-paste0(infor$site,infor$method)
@@ -849,20 +835,10 @@ animal[animal$number==1,]$try<-"100%"
 animal[animal$number>1,]$try<-">100%"
 soil<-animal[grepl("soil",animal$pooling),]
 soil<-soil[!is.na(soil$ratio),]
-library(dplyr)
 soil <- soil %>%
   filter(!(method == "deep"))
 soil <- soil %>%
   filter(!(method == "deep_SUCC"))
-
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
-library(MuMIn)
-library("parameters")
 mod01<-lm(ratio~ try+method+ site,data = soil)
 #broom::tidy(mod01)
 options(scipen = 999)
@@ -899,12 +875,6 @@ DNA <- DNA %>%
   filter(!(method == "deep"))
 DNA <- DNA %>%
   filter(!(method == "deep_SUCC"))
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
 mod01<-lm(ratio~ try+method+ site,data = DNA)
 performance::performance(mod01)
 options(scipen = 999)
@@ -977,12 +947,6 @@ fungi <- fungi %>%
   filter(!(site == "LV" & method == "deep_SUCC"))
 soil<-fungi[grepl("soil",fungi$pooling),]
 soil<-soil[!is.na(soil$ratio),]
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
 soil<-soil[!is.na(soil$try),]
 mod01<-lm(ratio~ try+method+site,data = soil)
 performance::performance(mod01)
@@ -1016,12 +980,6 @@ plot_predictions(mod01,condition = "try")+
 #DNA
 DNA<-fungi[grepl("DNA",fungi$pooling),]
 DNA<-DNA[!is.na(DNA$ratio),]
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
 DNA<-DNA[!is.na(DNA$try),]
 mod01<-lm(ratio~ try+method+site,data = DNA)
 performance::performance(mod01)
@@ -1090,12 +1048,6 @@ bacteria[bacteria$number==1,]$try<-"100%"
 bacteria[bacteria$number>1,]$try<-">100%"
 soil<-bacteria[grepl("soil",bacteria$pooling),]
 soil<-soil[!is.na(soil$ratio),]
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
 soil<-soil[!is.na(soil$try),]
 mod01<-lm(ratio~ try+method+site,data = soil)
 performance::performance(mod01)
@@ -1129,12 +1081,6 @@ plot_predictions(mod01,condition = "try")+
 #DNA
 DNA<-bacteria[grepl("DNA",bacteria$pooling),]
 DNA<-DNA[!is.na(DNA$ratio),]
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
 mod01<-lm(ratio~ try+method+ site,data = DNA)
 performance::performance(mod01)
 options(scipen = 999)
@@ -1193,9 +1139,9 @@ plot_predictions(mod01,condition = "pooling")+
 result<-rbind(bacteria.result.DNA,bacteria.result.soil,
       fungi.result.DNA,fungi.result.soil,
       result.DNA,result.soil)
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/14.sequencing depth/correct1/revise")
 write.csv(result,"richness.parameters.csv")
 result<-rbind(bacteria.result.pooling,
               fungi.result.pooling,
               result.pooling)
 write.csv(result,"pooling.compare.parameters.csv")
+
