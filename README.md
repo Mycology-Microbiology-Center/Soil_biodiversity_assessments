@@ -6,6 +6,9 @@ This repository contains the code and resources used for analyzing the impact of
 - `get the richness at different sequencing depths.R`: Script to estimate diversity at various sequencing depths.
 - `similarity.comparison.R`: Script to estimate the difference in community dissimilarity across pooling strategies.
 - `visualization and significant test.R`: Generates figures used in the manuscript (e.g., accumulation curve).
+- `diversity comparison across sampling designs`: including constrast of marginal effects in diversity across sampling designs; diversity comparison across sampling designs/effective number of designs.R: Script to estimate effective number of OTUs for each unpooled sampling design at summary sequencing depth.
+- `pooling effect on diversity across sampling designs`:  including the script to estimate the pooling effect and the effect of the sequencing depths on the diversity estimate.
+- `rare OTUs and artefacts`: including the script to estimate the influence of sampling designs on the rare OTUs, rare OTUs, and artefacts.
 # Calcuator link
 https://mycology-microbiology-center.github.io/Soil_biodiversity_assessments/
 # Citation
