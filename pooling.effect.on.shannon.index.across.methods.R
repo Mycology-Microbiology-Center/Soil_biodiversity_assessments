@@ -6,7 +6,6 @@ library(ggplot2)
 library(rcompanion)
 library(dplyr)
 #DNA
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/14.sequencing depth/correct1")
 all<-read.csv("proportion.shannon.all.csv",header = TRUE,row.names = 1,sep = ",")
 all<-all[grepl("100%",all$proportion),]
 all<-all[,c(2:5,9)]
@@ -26,14 +25,11 @@ b<-avg_comparisons(mod01, variables = list(method = "pairwise"))
 letter<-cldList(p.value~contrast,threshold = 0.05,data=b)
 letter$Group<-gsub("4A","40A",letter$Group)
 letter$Group<-gsub("4B","40B",letter$Group)
-
 difference <- DNA%>%
   group_by(method) %>%
   summarise(max=mean(ratio))
-
 y.site<-merge(letter,difference,by.x="Group",by.y="method")
 y.site<-data.frame(area=factor(y.site$Group),ymax=y.site$max,letter=y.site$Letter)
-
 plot_predictions(mod01,condition = "method" )+
   labs(x="method",y="Richness ratio")+
   theme_light() +
@@ -55,7 +51,6 @@ animal.result.soil<-parameters::model_parameters(mod01)
 animal.result.soil$organism<-'animal'
 animal.result.soil$pooling<-'soil'
 performance::performance(mod01)
-
 b<-avg_comparisons(mod01, variables = list(method = "pairwise")) 
 letter<-cldList(p.value~contrast,threshold = 0.05,data=b)
 letter$Group<-gsub("4A","40A",letter$Group)
@@ -81,7 +76,6 @@ plot_predictions(mod01,condition = "method" )+
   geom_hline(yintercept = 1,linetype="dashed",color="grey")+
   geom_text(data = y.site, aes(x = area , y = ymax, label = letter,hjust=-0.5))
 ##fungi
-##pooling effect
 #DNA
 DNA<-fungi[fungi$pooling=="DNA",]
 DNA <- DNA %>%
@@ -156,7 +150,6 @@ plot_predictions(mod01,condition = "method" )+
   scale_y_continuous(breaks=c(-1,0,0.5,1,1.5,2,3))+ 
   geom_hline(yintercept = 1,linetype="dashed",color="grey")+
   geom_text(data = y.site, aes(x = area , y = ymax, label = letter,hjust=-0.5))
-
 ##bacteria
 DNA<-bacteria[bacteria$pooling=="DNA",]
 mod01<-lm(ratio ~ method + site,data = DNA)
@@ -223,5 +216,5 @@ plot_predictions(mod01,condition = "method" )+
 result<-rbind(bacteria.result.DNA,bacteria.result.soil,
               fungi.result.DNA,fungi.result.soil,
               animal.result.DNA,animal.result.soil)
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/14.sequencing depth/correct1/revise")
 write.csv(result,"PE.methods.shannon.csv")
+
