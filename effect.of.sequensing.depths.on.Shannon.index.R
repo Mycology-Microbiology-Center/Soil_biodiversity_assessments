@@ -5,7 +5,8 @@ library(lmerTest)
 library(ggplot2)
 library(rcompanion)
 library(dplyr)
-library(scales)
+library(MuMIn)
+library("parameters")
 ##bacteria soil
 soil.metadata <- read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 bacteria.soil.m<-read.csv("bacteria.pooled.shannon.csv",header = TRUE,row.names = 1,sep = ",")
@@ -1073,4 +1074,5 @@ result<-rbind(bacteria.result.DNA,bacteria.result.soil,
               fungi.result.DNA,fungi.result.soil,
               result.DNA,result.soil)
 write.csv(result,"shannon.parameters.csv")
+
 
