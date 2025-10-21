@@ -14,7 +14,6 @@ options(scipen = 999)
 animal.result<-parameters::model_parameters(mod01)
 animal.result$organism<-'animal'
 performance::performance(mod01)
-
 b<-avg_comparisons(mod01, variables = list(method.x = "pairwise")) 
 letter<-cldList(p.value~contrast,threshold = 0.05,data=b)
 letter$Group<-gsub("4A","40A",letter$Group)
@@ -39,13 +38,6 @@ plot_predictions(mod01,condition = "method.x")+
 
 ##fungi
 fungi.normal.m<-read.csv("fungi.totalrichness.csv",header = TRUE,row.names = 1,sep = ",")
-##normal
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
 names(fungi.normal.m)[names(fungi.normal.m)=="method"]<-"method.x"
 mod01<-lm(mean~  method.x + site,data = fungi.normal.m)
 options(scipen = 999)
@@ -76,13 +68,6 @@ plot_predictions(mod01,condition = "method.x")+
 
 ##bacteria
 bacteria.normal.m<-read.csv("bacteria.totalrichness.csv",header = TRUE,row.names = 1,sep = ",")
-##normal
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
 names(bacteria.normal.m)[names(bacteria.normal.m)=="method"]<-"method.x"
 mod01<-lm(mean~  method.x + site,data = bacteria.normal.m)
 options(scipen = 999)
@@ -114,5 +99,6 @@ result<-rbind(bacteria.result,
               fungi.result,
               animal.result)
 write.csv(result,"a.unpooled.totalrichness.parameters.csv")
+
 
 
