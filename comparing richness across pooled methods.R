@@ -1,8 +1,13 @@
 ##bacteria
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
+library(marginaleffects)
+library(lme4)
+library(lmerTest)
+library(ggplot2)
+library(rcompanion)
+library(dplyr)
 bacteria.normal.m<-read.csv("bacteria.pooled.richness.csv",header = TRUE,row.names = 1,sep = ",")
 bacteria.normal.m$site<-row.names(bacteria.normal.m)
-metadata<-read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
+metadata<-read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 metadata2<-metadata
 metadata$site<-paste0(metadata$site,"DNA")
 metadata2$site<-paste0(metadata2$site,"soil")
@@ -15,12 +20,6 @@ bacteria.normal.m$site2<-substr(bacteria.normal.m$site,1,2)
 bacteria.normal.m<-bacteria.normal.m[,c(1,2,8,9)]
 ###DNA
 DNA<-bacteria.normal.m[grepl("DNA",bacteria.normal.m$site),]
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
 names(DNA)[names(DNA)=="method"]<-"method.x"
 names(DNA)[names(DNA)=="estimate"]<-"estimate.x"
 mod01<-lm(estimate.x~  method.x + site2,data = DNA)
@@ -53,12 +52,6 @@ plot_predictions(mod01,condition = "method.x" )+
 
 ###soil
 soil<-bacteria.normal.m[grepl("soil",bacteria.normal.m$site),]
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
 names(soil)[names(soil)=="method"]<-"method.x"
 names(soil)[names(soil)=="estimate"]<-"estimate.x"
 mod01<-lm(estimate.x~  method.x + site2,data = soil)
@@ -111,10 +104,9 @@ plot_predictions(mod01,condition = "type", transform = exp )+
   )
 
 ##fungi #use the mean value
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
 fungi.normal.m<-read.csv("fungi.pooled.richness.csv",header = TRUE,row.names = 1,sep = ",")
 fungi.normal.m$site<-row.names(fungi.normal.m)
-metadata<-read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
+metadata<-read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 metadata2<-metadata
 metadata$site<-paste0(metadata$site,"DNA")
 metadata2$site<-paste0(metadata2$site,"soil")
@@ -127,12 +119,6 @@ fungi.normal.m$site2<-substr(fungi.normal.m$site,1,2)
 fungi.normal.m<-fungi.normal.m[,c(1,2,8,9)]
 ###DNA
 DNA<-fungi.normal.m[grepl("DNA",fungi.normal.m$site),]
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
 names(DNA)[names(DNA)=="method"]<-"method.x"
 names(DNA)[names(DNA)=="estimate"]<-"estimate.x"
 mod01<-lm(estimate.x~  method.x + site2,data = DNA)
@@ -167,12 +153,6 @@ plot_predictions(mod01,condition = "method.x" )+
 
 ###soil
 soil<-fungi.normal.m[grepl("soil",fungi.normal.m$site),]
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
 names(soil)[names(soil)=="method"]<-"method.x"
 names(soil)[names(soil)=="estimate"]<-"estimate.x"
 mod01<-lm(estimate.x~  method.x + site2,data = soil)
@@ -225,10 +205,9 @@ plot_predictions(mod01,condition = "type", transform = exp )+
     legend.position = "bottom"
   )
 ##animal #use the mean value
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
 animal.normal.m<-read.csv("animal.pooled.richness.csv",header = TRUE,row.names = 1,sep = ",")
 animal.normal.m$site<-row.names(animal.normal.m)
-metadata<-read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
+metadata<-read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 metadata2<-metadata
 metadata$site<-paste0(metadata$site,"DNA")
 metadata2$site<-paste0(metadata2$site,"soil")
@@ -243,12 +222,6 @@ animal.normal.m<-animal.normal.m[,c(1,2,8,9)]
 DNA<-animal.normal.m[grepl("DNA",animal.normal.m$site),]
 DNA<-DNA[DNA$method!="deep",]
 #DNA<-DNA[DNA$method!="LUCAS",]
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
 names(DNA)[names(DNA)=="method"]<-"method.x"
 names(DNA)[names(DNA)=="estimate"]<-"estimate.x"
 mod01<-lm(estimate.x~  method.x + site2,data = DNA)
@@ -284,12 +257,6 @@ plot_predictions(mod01,condition = "method.x" )+
 ###soil
 soil<-animal.normal.m[grepl("soil",animal.normal.m$site),]
 soil<-soil[soil$method!="deep",]
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
 names(soil)[names(soil)=="method"]<-"method.x"
 names(soil)[names(soil)=="estimate"]<-"estimate.x"
 mod01<-lm(estimate.x~  method.x + site2,data = soil)
@@ -345,9 +312,9 @@ plot_predictions(mod01,condition = "type", transform = exp )+
 result<-rbind(bacteria.result,
               fungi.result,
               animal.result)
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
 write.csv(result,"pooling.richness.parameters.csv")
 result<-rbind(bacteria.result.DNA,bacteria.result.soil,
               fungi.result.DNA,fungi.result.soil,
               animal.result.DNA,animal.result.soil)
 write.csv(result,"a.pooled.richness.parameters.csv")
+
