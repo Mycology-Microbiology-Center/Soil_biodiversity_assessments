@@ -1,5 +1,4 @@
 ##animal
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
 animal.normal.m<-read.csv("unpooled.animal.shannon.exp.atsummarysequencing.depth.csv",header = TRUE,row.names = 1,sep = ",")
 animal.normal.m<-animal.normal.m[,c(1,6,7)]
 library(marginaleffects)
@@ -38,15 +37,8 @@ plot_predictions(mod01,condition = "method" )+
   geom_text(data = y.site, aes(x = area , y = ymax, label = letter,hjust=-0.5))
 
 ##fungi
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
 fungi.normal.m<-read.csv("unpooled.fungi.shannon.exp.atsummarysequencing.depth.csv",header = TRUE,row.names = 1,sep = ",")
 fungi.normal.m<-fungi.normal.m[,c(1,6,7)]
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
 mod01<-lm(log(shannon)~  method + site,data = fungi.normal.m)
 options(scipen = 999)
 fungi.result<-parameters::model_parameters(mod01)
@@ -79,15 +71,8 @@ plot_predictions(mod01,condition = "method" )+
   geom_text(data = y.site, aes(x = area , y = ymax, label = letter,hjust=-0.5))
 
 ##bacteria
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
 bacteria.normal.m<-read.csv("unpooled.bacteria.shannon.exp.atsummarysequencing.depth.csv",header = TRUE,row.names = 1,sep = ",")
 bacteria.normal.m<-bacteria.normal.m[,c(1,6,7)]
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(ggplot2)
-library(rcompanion)
-library(dplyr)
 mod01<-lm(log(shannon)~  method + site,data = bacteria.normal.m)
 bacteria.result<-parameters::model_parameters(mod01)
 bacteria.result$organism<-'bacteria'
@@ -120,6 +105,6 @@ plot_predictions(mod01,condition = "method" )+
 result<-rbind(bacteria.result,
               fungi.result,
               animal.result)
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
 write.csv(result,"a.unpooled.totalshannon.parameters.csv")
+
 
