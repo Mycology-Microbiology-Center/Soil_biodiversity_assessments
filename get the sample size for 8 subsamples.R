@@ -99,10 +99,11 @@ bacteria.out <- iNEXT3D(bacteria, diversity = 'TD', q = 0, datatype="incidence_r
 ggiNEXT3D(bacteria.out, type = 1, facet.var = "Assemblage")
 
 ####assess the best sampling area for 8 subsamples(4 pairs)
+library(metagMisc)
 animal<- read.table("animal.rarefy.table2.csv",header = T,row.names = 1,sep = ",")
 animal2<-animal[,!grepl("DNA|soil",names(animal))]
 animal2<-as.data.frame(t(animal2))
-metadata<-read.csv("normal_metadata2.csv",header = TRUE,sep = ",")
+metadata<-read.csv("normal_metadata.csv",header = TRUE,sep = ",")
 animal2<-animal2[grepl(paste0(metadata[grepl("GSMc",metadata$method),]$site,collapse = "|"),row.names(animal2)),]
 LV<-animal2[grepl("LV",row.names(animal2)),]
 LZ<-animal2[grepl("LZ",row.names(animal2)),]
@@ -114,20 +115,19 @@ coordinate$sample<-gsub("LZ","LV",coordinate$sample)
 coordinate.LV<-coordinate[match(row.names(LV),coordinate$sample),]
 coordinate$sample<-gsub("LV","LW",coordinate$sample)
 coordinate.LW<-coordinate[match(row.names(LW),coordinate$sample),]
-
 ###
 geta.d<-function(site.table,coordinate){
   threshold=2
   select<-unique(gsub("a|b","",row.names(site.table))[duplicated(gsub("a|b","",row.names(site.table)))])
   combn8<-combn(select,4,simplify = F)
-  to_remove <- rep(FALSE, length(combn8))  
+  to_remove <- rep(FALSE, length(combn8))  # Track elements to remove
   for (i in seq_along(combn8)) {
-    if (to_remove[i]) next  
+    if (to_remove[i]) next  # Skip if already marked for removal
     
     for (j in seq_along(combn8)) {
-      if (i != j && !to_remove[j]) {  
+      if (i != j && !to_remove[j]) {  # Avoid self-comparison & already removed
         if (length(intersect(combn8[[i]], combn8[[j]])) >= threshold) {
-          to_remove[j] <- TRUE  
+          to_remove[j] <- TRUE  # Mark one for removal
         }
       }
     }
@@ -159,17 +159,18 @@ animal.LZ.diversity<-geta.d(LZ,coordinate.LZ)
 animal.LZ.diversity$site<-"LZ"
 animal.LV.diversity$site<-"LV"
 animal.LW.diversity$site<-"LW"
+
 ##bacteria
+library(metagMisc)
 bacteria<- read.table("bacteria.rarefy.table.csv",header = T,row.names = 1,sep = ",")
 bacteria2<-bacteria[,!grepl("DNA|soil",names(bacteria))]
 bacteria2<-as.data.frame(t(bacteria2))
-metadata<-read.csv("normal_metadata2.csv",header = TRUE,sep = ",")
+metadata<-read.csv("normal_metadata.csv",header = TRUE,sep = ",")
 bacteria2<-bacteria2[grepl(paste0(metadata[grepl("GSMc",metadata$method),]$site,collapse = "|"),row.names(bacteria2)),]
 LV<-bacteria2[grepl("LV",row.names(bacteria2)),]
 LZ<-bacteria2[grepl("LZ",row.names(bacteria2)),]
 LW<-bacteria2[grepl("LW",row.names(bacteria2)),]
 LZ<-LZ[rowSums(LZ)>0,]
-
 coordinate<-read.table('coordinate.csv',sep=",",header = T)
 coordinate.LZ<-coordinate[match(row.names(LZ),coordinate$sample),]
 coordinate$sample<-gsub("LZ","LV",coordinate$sample)
@@ -182,17 +183,17 @@ bacteria.LZ.diversity<-geta.d(LZ,coordinate.LZ)
 bacteria.LZ.diversity$site<-"LZ"
 bacteria.LV.diversity$site<-"LV"
 bacteria.LW.diversity$site<-"LW"
+all<-rbind(bacteria.LW.diversity,bacteria.LZ.diversity,bacteria.LV.diversity)
 #fungi
 fungi<- read.table("fungi.rarefy.table2.csv",header = T,row.names = 1,sep = ",")
 fungi2<-fungi[,!grepl("DNA|soil",names(fungi))]
 fungi2<-as.data.frame(t(fungi2))
-metadata<-read.csv("normal_metadata2.csv",header = TRUE,sep = ",")
+metadata<-read.csv("normal_metadata.csv",header = TRUE,sep = ",")
 fungi2<-fungi2[grepl(paste0(metadata[grepl("GSMc",metadata$method),]$site,collapse = "|"),row.names(fungi2)),]
 LV<-fungi2[grepl("LV",row.names(fungi2)),]
 LZ<-fungi2[grepl("LZ",row.names(fungi2)),]
 LW<-fungi2[grepl("LW",row.names(fungi2)),]
 LZ<-LZ[rowSums(LZ)>0,]
-
 coordinate<-read.table('coordinate.csv',sep=",",header = T)
 coordinate.LZ<-coordinate[match(row.names(LZ),coordinate$sample),]
 coordinate$sample<-gsub("LZ","LV",coordinate$sample)
@@ -205,19 +206,39 @@ fungi.LZ.diversity<-geta.d(LZ,coordinate.LZ)
 fungi.LZ.diversity$site<-"LZ"
 fungi.LV.diversity$site<-"LV"
 fungi.LW.diversity$site<-"LW"
-###
 all<-rbind(fungi.LW.diversity,fungi.LZ.diversity,fungi.LV.diversity)
+###
 all2<-all[abs(all$y-all$x)<=5,]
 mod<-lmer(richness~area+(1|site),data = all2)
+performance::performance(mod)
+options(scipen = 999)
+fungi.result<-parameters::model_parameters(mod)
+fungi.result$organism<-'fungi'
 summary(mod)
+library(effectsize)
+eta_squared(mod)
 all<-rbind(bacteria.LW.diversity,bacteria.LZ.diversity,bacteria.LV.diversity)
 all2<-all[abs(all$y-all$x)<=5,]
 mod<-lmer(richness~area+(1|site),data = all2)
+performance::performance(mod)
+options(scipen = 999)
+bacteria.result<-parameters::model_parameters(mod)
+bacteria.result$organism<-'bacteria'
 summary(mod)
+eta_squared(mod)
 all<-rbind(animal.LW.diversity,animal.LZ.diversity,animal.LV.diversity)
 all2<-all[abs(all$y-all$x)<=5,]
 mod<-lmer(richness~area+(1|site),data = all2)
+performance::performance(mod)
+options(scipen = 999)
+animal.result<-parameters::model_parameters(mod)
+animal.result$organism<-'animal'
 summary(mod)
+eta_squared(mod)
+result<-rbind(bacteria.result,
+              fungi.result,
+              animal.result)
+write.csv(result,"area.parameters.csv")
 ##get the minimum area
 all<-rbind(fungi.LW.diversity,fungi.LZ.diversity,fungi.LV.diversity)
 all2<-all[abs(all$y-all$x)<=5,]
@@ -234,158 +255,3 @@ all2<-all[abs(all$y-all$x)<=5,]
 all2<-all2[all2$y>6.5&all2$x>6.5,]
 mod<-lmer(richness~area+(1|site),data = all2)
 summary(mod)
-
-###calculate the coverage
-###animal
-normal<-read.table("animal.rarefy.table2.csv",header = T,row.names = 1,sep = ",")
-normal.fre<-as.data.frame(t(normal))
-normal.fre$site<-row.names(normal.fre) 
-normal.fre$site2<-substr(normal.fre$site,1,2) 
-metadata.normal2<-read.csv("normal_metadata2.csv",header = TRUE,sep = ",")
-metadata.normal2<-metadata.normal2[,c(1,2)]
-normal.fre2<-merge(normal.fre,metadata.normal2,by="site",all=T)
-normal.fre2<-normal.fre2[!is.na(normal.fre2$COI_Otu1),]
-normal.fre2<-normal.fre2[!grepl("B1|B2|B3|B4|B5",normal.fre2$site),]
-normal.fre2<-normal.fre2[!is.na(normal.fre2$method),]
-normal.fre2<-normal.fre2[normal.fre2$method=="GSMc",]
-normal.fre2<-normal.fre2[,1:(ncol(normal.fre2)-2)]
-LV<-normal.fre2[grepl("LV",normal.fre2$site),]
-row.names(LV)<-LV$site
-LV<-LV[,-1]
-LV<-LV[rowSums(LV)>0,]
-LV<-LV[,colSums(LV)>0]
-LW<-normal.fre2[grepl("LW",normal.fre2$site),]
-row.names(LW)<-LW$site
-LW<-LW[,-1]
-LW<-LW[rowSums(LW)>0,]
-LW<-LW[,colSums(LW)>0]
-LZ<-normal.fre2[grepl("LZ",normal.fre2$site),]
-row.names(LZ)<-LZ$site
-LZ<-LZ[,-1]
-LZ<-LZ[rowSums(LZ)>0,]
-LZ<-LZ[,colSums(LZ)>0]
-LZ<-as.data.frame(t(LZ))
-LW<-as.data.frame(t(LW))
-LV<-as.data.frame(t(LV))
-###
-select<-unique(gsub("a|b","",names(LV))[duplicated(gsub("a|b","",names(LV)))])
-LV<-LV[,grepl(paste0(sample(select,10,replace = F),collapse = "|"),names(LV))]
-select<-unique(gsub("a|b","",names(LW))[duplicated(gsub("a|b","",names(LW)))])
-LW<-LW[,grepl(paste0(sample(select,10,replace = F),collapse = "|"),names(LW))]
-select<-unique(gsub("a|b","",names(LZ))[duplicated(gsub("a|b","",names(LZ)))])
-LZ<-LZ[,grepl(paste0(sample(select,10,replace = F),collapse = "|"),names(LZ))]
-LW<-LW[rowSums(LW)>0,]
-LW<-LW[,colSums(LW)>0]
-LZ<-LZ[rowSums(LZ)>0,]
-LZ<-LZ[,colSums(LZ)>0]
-LV<-LV[rowSums(LV)>0,]
-LV<-LV[,colSums(LV)>0]
-###
-animal<-list(LZ=as.numeric(rowSums(LZ)),LV=as.numeric(rowSums(LV)),LW=as.numeric(rowSums(LW)))
-animal.out <- iNEXT3D(animal, diversity = 'TD', q = 0, datatype="abundance")
-ggiNEXT3D(animal.out, type = 3, facet.var = "Assemblage")
-
-#fungi
-normal<-read.table("fungi.rarefy.table2.csv",header = T,row.names = 1,sep = ",")
-normal.fre<-as.data.frame(t(normal))
-normal.fre$site<-row.names(normal.fre) 
-normal.fre$site2<-substr(normal.fre$site,1,2) 
-metadata.normal2<-read.csv("normal_metadata2.csv",header = TRUE,sep = ",")
-metadata.normal2<-metadata.normal2[,c(1,2)]
-normal.fre2<-merge(normal.fre,metadata.normal2,by="site",all=T)
-normal.fre2<-normal.fre2[!is.na(normal.fre2$'0003b6ab41bde80a3cc58f45791695956d51cb52'),]
-normal.fre2<-normal.fre2[!grepl("B1|B2|B3|B4|B5",normal.fre2$site),]
-normal.fre2<-normal.fre2[!is.na(normal.fre2$method),]
-normal.fre2<-normal.fre2[normal.fre2$method=="GSMc",]
-normal.fre2<-normal.fre2[,1:(ncol(normal.fre2)-2)]
-LV<-normal.fre2[grepl("LV",normal.fre2$site),]
-row.names(LV)<-LV$site
-LV<-LV[,-1]
-LV<-LV[rowSums(LV)>0,]
-LV<-LV[,colSums(LV)>0]
-LW<-normal.fre2[grepl("LW",normal.fre2$site),]
-row.names(LW)<-LW$site
-LW<-LW[,-1]
-LW<-LW[rowSums(LW)>0,]
-LW<-LW[,colSums(LW)>0]
-LZ<-normal.fre2[grepl("LZ",normal.fre2$site),]
-row.names(LZ)<-LZ$site
-LZ<-LZ[,-1]
-LZ<-LZ[rowSums(LZ)>0,]
-LZ<-LZ[,colSums(LZ)>0]
-LZ<-as.data.frame(t(LZ))
-LW<-as.data.frame(t(LW))
-LV<-as.data.frame(t(LV))
-###
-select<-unique(gsub("a|b","",names(LV))[duplicated(gsub("a|b","",names(LV)))])
-LV<-LV[,grepl(paste0(sample(select,15,replace = F),collapse = "|"),names(LV))]
-select<-unique(gsub("a|b","",names(LW))[duplicated(gsub("a|b","",names(LW)))])
-LW<-LW[,grepl(paste0(sample(select,15,replace = F),collapse = "|"),names(LW))]
-select<-unique(gsub("a|b","",names(LZ))[duplicated(gsub("a|b","",names(LZ)))])
-LZ<-LZ[,grepl(paste0(sample(select,15,replace = F),collapse = "|"),names(LZ))]
-LW<-LW[rowSums(LW)>0,]
-LW<-LW[,colSums(LW)>0]
-LZ<-LZ[rowSums(LZ)>0,]
-LZ<-LZ[,colSums(LZ)>0]
-LV<-LV[rowSums(LV)>0,]
-LV<-LV[,colSums(LV)>0]
-###
-fungi<-list(LZ=as.numeric(rowSums(LZ)),LV=as.numeric(rowSums(LV)),LW=as.numeric(rowSums(LW)))
-fungi.out <- iNEXT3D(fungi, diversity = 'TD', q = 0, datatype="abundance")
-ggiNEXT3D(fungi.out, type = 3, facet.var = "Assemblage")
-
-#bacteria
-normal<-read.table("bacteria.rarefy.table.csv",header = T,row.names = 1,sep = ",")
-normal.fre<-as.data.frame(t(normal))
-normal.fre$site<-row.names(normal.fre) 
-normal.fre$site2<-substr(normal.fre$site,1,2) 
-metadata.normal2<-read.csv("normal_metadata2.csv",header = TRUE,sep = ",")
-metadata.normal2<-metadata.normal2[,c(1,2)]
-normal.fre2<-merge(normal.fre,metadata.normal2,by="site",all=T)
-normal.fre2<-normal.fre2[!is.na(normal.fre2$'0000294ab66fb96003e4afd4237026e0'),]
-normal.fre2<-normal.fre2[!grepl("B1|B2|B3|B4|B5",normal.fre2$site),]
-normal.fre2<-normal.fre2[!is.na(normal.fre2$method),]
-normal.fre2<-normal.fre2[normal.fre2$method=="GSMc",]
-normal.fre2<-normal.fre2[,1:(ncol(normal.fre2)-2)]
-LV<-normal.fre2[grepl("LV",normal.fre2$site),]
-row.names(LV)<-LV$site
-LV<-LV[,-1]
-LV<-LV[rowSums(LV)>0,]
-LV<-LV[,colSums(LV)>0]
-LW<-normal.fre2[grepl("LW",normal.fre2$site),]
-row.names(LW)<-LW$site
-LW<-LW[,-1]
-LW<-LW[rowSums(LW)>0,]
-LW<-LW[,colSums(LW)>0]
-LZ<-normal.fre2[grepl("LZ",normal.fre2$site),]
-row.names(LZ)<-LZ$site
-LZ<-LZ[,-1]
-LZ<-LZ[rowSums(LZ)>0,]
-LZ<-LZ[,colSums(LZ)>0]
-LZ<-as.data.frame(t(LZ))
-LW<-as.data.frame(t(LW))
-LV<-as.data.frame(t(LV))
-###
-select<-unique(gsub("a|b","",names(LV))[duplicated(gsub("a|b","",names(LV)))])
-LV<-LV[,grepl(paste0(sample(select,15,replace = F),collapse = "|"),names(LV))]
-select<-unique(gsub("a|b","",names(LW))[duplicated(gsub("a|b","",names(LW)))])
-LW<-LW[,grepl(paste0(sample(select,15,replace = F),collapse = "|"),names(LW))]
-select<-unique(gsub("a|b","",names(LZ))[duplicated(gsub("a|b","",names(LZ)))])
-LZ<-LZ[,grepl(paste0(sample(select,15,replace = F),collapse = "|"),names(LZ))]
-LW<-LW[rowSums(LW)>0,]
-LW<-LW[,colSums(LW)>0]
-LZ<-LZ[rowSums(LZ)>0,]
-LZ<-LZ[,colSums(LZ)>0]
-LV<-LV[rowSums(LV)>0,]
-LV<-LV[,colSums(LV)>0]
-###
-bacteria<-list(LZ=as.numeric(rowSums(LZ)),LV=as.numeric(rowSums(LV)),LW=as.numeric(rowSums(LW)))
-bacteria.out <- iNEXT3D(bacteria, diversity = 'TD', q = 0, datatype="abundance")
-ggiNEXT3D(bacteria.out, type = 3, facet.var = "Assemblage")
-
-
-
-
-
-
-
