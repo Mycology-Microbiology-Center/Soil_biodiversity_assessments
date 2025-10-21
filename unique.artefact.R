@@ -1,19 +1,22 @@
 ######
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/pooled rarefy")
+library(marginaleffects)
+library(lme4)
+library(lmerTest)
+library(dplyr)
 a<-read.csv("OTUs_LULU_blast_1st_tophit.txt",sep="+",header=F)
 b<-read.csv("otu.select.txt",header=F)
 a<-a[!duplicated(a$V1),]
 a1<-a[a$V1 %in% b$V1,]
 a2<-a1[grepl("f__Russula|f__Thelephoraceae|f__Sebacinaceae",a1$V2),]
 #get the unique OTUs
-normal<-read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/diversity original_not summarize/fungi.rarefy.table2.csv")
+normal<-read.csv("fungi.rarefy.table2.csv")
 n.r<-normal[row.names(normal) %in% a2$V1,]
 n.r<-n.r[,colSums(n.r)>0]
 n.r<-n.r[,!grepl("DNA|soil",names(n.r))]
 n.r<-n.r[,colSums(n.r)>0]
 n.r<-n.r[rowSums(n.r)>0,]
 n.r<-n.r[,!grepl("B",names(n.r))]
-metadata<-read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/normal_metadata.csv",header = TRUE,sep = ",")
+metadata<-read.csv("normal_metadata.csv",header = TRUE,sep = ",")
 n.r<-as.data.frame(t(n.r))
 n.r$site<-row.names(n.r)
 nr<-merge(n.r,metadata,by="site")
@@ -23,7 +26,7 @@ nr<-aggregate(nr[,2:(ncol(nr)-1)],by=list(design=nr$method,site=nr$site),sum)
 normal<-nr
 row.names(normal)<-paste0(normal$site,normal$design)
 normal<-normal[,-c(1:2)]
-pool<-read.table("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/17.pool similarity/fungi.poolat100.csv",header = T,row.names = 1,sep = ",")
+pool<-read.table("fungi.poolat100.csv",header = T,row.names = 1,sep = ",")
 row.names(pool)<-pool$OTU
 pool<-pool[,-1]
 pool<-pool[row.names(pool) %in% a2$V1,]
@@ -31,7 +34,7 @@ soil<-pool[,grepl("soil",names(pool))]
 DNA<-pool[,grepl("DNA",names(pool))]
 names(soil)<-gsub("soil","",names(soil))
 names(DNA)<-gsub("DNA","",names(DNA))
-metadata<-read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/soil.metadata.csv",header = TRUE,sep = ",")
+metadata<-read.csv("soil.metadata.csv",header = TRUE,sep = ",")
 metadata$method[metadata$method=="GSMc_62"]<-"GSMc"
 metadata$method[metadata$method=="deep"]<-"Deep"
 names(DNA)<-paste0(substr(metadata[match(names(DNA),metadata$site),]$site,1,2),metadata[match(names(DNA),metadata$site),]$method)
@@ -66,7 +69,7 @@ for (i in row.names(normal)) {
   unique.richness.d.n.u<-rbind(unique.richness.d.n.u,unique.richness.d.n.u1)
 }
 ###GSMc40AB
-select<-read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/1.accumulative/sheet2_for_pooled.csv")
+select<-read.csv("sheet2_for_pooled.csv")
 GSMc40A<-paste0(c(select[select$X1Amix=="GSMc40A",]$X,gsub("LZ","LV",select[select$X1Amix=="GSMc40A",]$X),
                   gsub("LZ","LW",select[select$X1Amix=="GSMc40A",]$X)),collapse = "|")
 GSMc40B<-paste0(c(select[select$X1Bmix=="GSMc40B",]$X,gsub("LZ","LV",select[select$X1Bmix=="GSMc40B",]$X),
@@ -79,7 +82,7 @@ B40<-n.r[grepl(GSMc40B,row.names(n.r)),]
 B40$site<-substr(row.names(B40),1,2)
 B40<-aggregate(B40[,1:(ncol(B40)-1)],by=list(site=B40$site),sum)
 row.names(B40)<-paste0(B40$site,"GSMc_40B")
-metadata<-read.csv("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/normal_metadata.csv",header = TRUE,sep = ",")
+metadata<-read.csv("normal_metadata.csv",header = TRUE,sep = ",")
 deep_succ<-n.r[row.names(n.r) %in% metadata[grepl("Deep|SUCC",metadata$method),]$site,]
 deep_succ$site<-substr(row.names(deep_succ),1,2)
 deep_succ<-aggregate(deep_succ[,1:(ncol(deep_succ)-1)],by=list(site=deep_succ$site),sum)
@@ -113,7 +116,6 @@ for (i in row.names(another)) {
   another.unique.richness.d.n.u<-rbind(another.unique.richness.d.n.u,another.unique.richness.d.n.u1)
 }
 ###get the artifect
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/pooled rarefy")
 ar<-read.csv("nonartefact.csv",row.names = 1)
 a.r2<-ar$x
 arte.unique.richness.DNA<-data.frame()
@@ -184,15 +186,12 @@ DNA.another<-merge(arte.another.unique.richness.DNA[,1:2],another.unique.richnes
 soil.another<-merge(arte.another.unique.richness.soil[,1:2],another.unique.richness.soil,by="method")
 soil<-rbind(soil.another,soil)
 DNA<-rbind(DNA.another,DNA)
-
-
 normal.DNA<-merge(arte.unique.richness.d.n.u[,1:2],unique.richness.d.n.u,by="method")
 normal.soil<-merge(arte.unique.richness.s.n.u[,1:2],unique.richness.s.n.u,by="method")
 normal.DNA.another<-merge(arte.another.unique.richness.d.n.u[,1:2],another.unique.richness.d.n.u,by="method")
 normal.soil.another<-merge(arte.another.unique.richness.s.n.u[,1:2],another.unique.richness.s.n.u,by="method")
 normal.soil<-rbind(normal.soil.another,normal.soil)
 normal.DNA<-rbind(normal.DNA.another,normal.DNA)
-
 ###get the artifect ratio
 normal.soil$ratio<-normal.soil$richness.x/normal.soil$richness.y
 normal.DNA$ratio<-normal.DNA$richness.x/normal.DNA$richness.y
@@ -206,11 +205,7 @@ normal.DNA$pooling<-"unpooled"
 ###
 a.r2<-rbind(DNA,normal.DNA)
 a.r3<-rbind(soil,normal.soil)
-###
-library(marginaleffects)
-library(lme4)
-library(lmerTest)
-library(dplyr)
+
 ##soil
 a.r3<-a.r3[!is.na(a.r3$ratio),]
 a.r3$method<-gsub("LV|LZ|LW","",a.r3$method)
