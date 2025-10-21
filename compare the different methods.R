@@ -1,7 +1,6 @@
 ##animal
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
 animal.normal.m<-read.csv("animal.totalrichness.csv",header = TRUE,sep = ",")
-##normal
+##unpooled
 library(marginaleffects)
 library(lme4)
 library(lmerTest)
@@ -39,7 +38,6 @@ plot_predictions(mod01,condition = "method.x")+
   geom_text(data = y.site, aes(x = area , y = ymax, label = letter,hjust=-0.5))
 
 ##fungi
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
 fungi.normal.m<-read.csv("fungi.totalrichness.csv",header = TRUE,row.names = 1,sep = ",")
 ##normal
 library(marginaleffects)
@@ -77,7 +75,6 @@ plot_predictions(mod01,condition = "method.x")+
   geom_text(data = y.site, aes(x = area , y = ymax, label = letter,hjust=-0.5))
 
 ##bacteria
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
 bacteria.normal.m<-read.csv("bacteria.totalrichness.csv",header = TRUE,row.names = 1,sep = ",")
 ##normal
 library(marginaleffects)
@@ -116,6 +113,6 @@ plot_predictions(mod01,condition = "method.x")+
 result<-rbind(bacteria.result,
               fungi.result,
               animal.result)
-setwd("C:/Users/meirong/Desktop/PhD project/downstream/richness and shannon/forth/pooled and unpooled comparison/2.compare mean and total richness of unpooled methods")
 write.csv(result,"a.unpooled.totalrichness.parameters.csv")
+
 
