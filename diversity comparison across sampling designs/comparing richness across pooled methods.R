@@ -94,7 +94,7 @@ performance::performance(mod01)
 options(scipen = 999)
 bacteria.result<-parameters::model_parameters(mod01)
 bacteria.result$organism<-'bacteria'
-plot_predictions(mod01,condition = "type", transform = exp )+
+plot_predictions(mod01,condition = "type" )+
   labs(x="method",y="Richness")+
   theme_light() +
   theme(
@@ -103,7 +103,7 @@ plot_predictions(mod01,condition = "type", transform = exp )+
     legend.position = "bottom"
   )
 
-##fungi #use the mean value
+##fungi
 fungi.normal.m<-read.csv("fungi.pooled.richness.csv",header = TRUE,row.names = 1,sep = ",")
 fungi.normal.m$site<-row.names(fungi.normal.m)
 metadata<-read.csv("soil.metadata.csv",header = TRUE,sep = ",")
@@ -196,7 +196,7 @@ options(scipen = 999)
 fungi.result<-parameters::model_parameters(mod01)
 fungi.result$organism<-'fungi'
 b<-avg_comparisons(mod01, variables = list(type = "pairwise")) 
-plot_predictions(mod01,condition = "type", transform = exp )+
+plot_predictions(mod01,condition = "type")+
   labs(x="method",y="Richness")+
   theme_light() +
   theme(
@@ -301,7 +301,7 @@ options(scipen = 999)
 animal.result<-parameters::model_parameters(mod01)
 animal.result$organism<-'animal'
 b<-avg_comparisons(mod01, variables = list(type = "pairwise")) 
-plot_predictions(mod01,condition = "type", transform = exp )+
+plot_predictions(mod01,condition = "type")+
   labs(x="method",y="Richness")+
   theme_light() +
   theme(
@@ -317,4 +317,5 @@ result<-rbind(bacteria.result.DNA,bacteria.result.soil,
               fungi.result.DNA,fungi.result.soil,
               animal.result.DNA,animal.result.soil)
 write.csv(result,"a.pooled.richness.parameters.csv")
+
 
