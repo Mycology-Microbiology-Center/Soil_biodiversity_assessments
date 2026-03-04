@@ -12,4 +12,4 @@ This repository contains the code and resources used for analyzing the impact of
 # Calcuator link
 https://mycology-microbiology-center.github.io/Soil_biodiversity_assessments/
 # Citation
-Chen, M., Dulya, O., Mikryukov, V., Copot, O., Metsoja, M., & Tedersoo, L. (under review). Sampling design and sample processing affect soil biodiversity assessments.
+Chen, M., O. Dulya, V. Mikryukov, O. Copot, M. Metsoja, and L. Tedersoo. 2026. “ Sampling Design and Sample Processing Affect Soil Biodiversity Assessments.” Molecular Ecology Resources 26, no. 3: e70113. https://doi.org/10.1111/1755-0998.70113.
